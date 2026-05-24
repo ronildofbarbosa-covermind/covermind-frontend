@@ -1,11 +1,17 @@
 import { Sidebar } from "@/components/layout/sidebar"
 import { KPICard } from "@/components/cards/kpi-card"
-import { buscarPainelExecutivo } from "../services/api"
+import { Top5Ranking } from "@/components/ranking/top5-ranking"
+import {
+  buscarPainelExecutivo,
+  buscarRankingVaga,
+} from "../services/api"
 
 export default async function CoberturasPage() {
   const painel = await buscarPainelExecutivo()
+  const ranking = await buscarRankingVaga("VAGA-004")
 
   const resumo = painel?.resumo_executivo
+  const top5 = ranking?.top_5 ?? []
 
   const vagasAbertas = resumo?.total_contextos_vulnerabilidade ?? 0
   const postosCriticos = resumo?.postos_maturidade_critica ?? 0
@@ -13,7 +19,6 @@ export default async function CoberturasPage() {
   const reservaAtencao = resumo?.reserva_operacional_em_atencao ?? 0
 
   const postoCritico = painel?.alertas_operacionais?.postos_criticos?.[0]
-  const topChurn = painel?.top_riscos?.churn?.[0]
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -51,29 +56,10 @@ export default async function CoberturasPage() {
             </div>
 
             <div className="mb-8 grid grid-cols-4 gap-6">
-              <KPICard
-                titulo="Vagas/Riscos Ativos"
-                valor={vagasAbertas}
-                descricao="contextos operacionais"
-              />
-
-              <KPICard
-                titulo="Postos Críticos"
-                valor={postosCriticos}
-                descricao="baixa maturidade"
-              />
-
-              <KPICard
-                titulo="Reincidências"
-                valor={reincidencias}
-                descricao="histórico operacional"
-              />
-
-              <KPICard
-                titulo="Reserva em Atenção"
-                valor={reservaAtencao}
-                descricao="filiais/grupos em alerta"
-              />
+              <KPICard titulo="Vagas/Riscos Ativos" valor={vagasAbertas} descricao="contextos operacionais" />
+              <KPICard titulo="Postos Críticos" valor={postosCriticos} descricao="baixa maturidade" />
+              <KPICard titulo="Reincidências" valor={reincidencias} descricao="histórico operacional" />
+              <KPICard titulo="Reserva em Atenção" valor={reservaAtencao} descricao="filiais/grupos em alerta" />
             </div>
 
             <div className="grid grid-cols-2 gap-8">
@@ -102,50 +88,19 @@ export default async function CoberturasPage() {
                   </div>
 
                   <div className="mt-6 grid grid-cols-3 gap-4">
-                    <Info
-                      titulo="Índice"
-                      valor={postoCritico?.indice_cobertura_treinada ?? 0}
-                    />
-
-                    <Info
-                      titulo="Treinar"
-                      valor={postoCritico?.necessidade_treinamento ?? 0}
-                    />
-
-                    <Info
-                      titulo="Status"
-                      valor={postoCritico ? "Crítico" : "Normal"}
-                    />
+                    <Info titulo="Índice" valor={postoCritico?.indice_cobertura_treinada ?? 0} />
+                    <Info titulo="Treinar" valor={postoCritico?.necessidade_treinamento ?? 0} />
+                    <Info titulo="Status" valor={postoCritico ? "Crítico" : "Normal"} />
                   </div>
                 </div>
               </section>
 
               <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
                 <h2 className="mb-6 text-2xl font-bold">
-                  Ranking Inteligente
+                  Ranking Inteligente · Top 5
                 </h2>
 
-                <div className="rounded-2xl border border-emerald-500 bg-[#020817] p-5">
-                  <h3 className="text-xl font-bold text-emerald-400">
-                    Contexto prioritário
-                  </h3>
-
-                  <p className="mt-2 text-slate-400">
-                    {topChurn
-                      ? `${topChurn.cliente} · ${topChurn.posto}`
-                      : "Sem contexto crítico carregado"}
-                  </p>
-
-                  <div className="mt-6 grid grid-cols-3 gap-4">
-                    <Info titulo="Filial" valor={topChurn?.filial ?? "-"} />
-                    <Info titulo="Score Churn" valor={topChurn?.score_churn ?? 0} />
-                    <Info titulo="Nível" valor={topChurn?.nivel_churn ?? "normal"} />
-                  </div>
-
-                  <button className="mt-6 w-full rounded-xl bg-blue-600 py-3 font-bold transition-all hover:bg-blue-500">
-                    Abrir Ranking da Vaga
-                  </button>
-                </div>
+                <Top5Ranking ranking={top5} />
               </section>
             </div>
           </div>
