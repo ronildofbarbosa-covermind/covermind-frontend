@@ -1,4 +1,5 @@
 import { ConvocacaoStatus } from "./convocacao-status"
+import { ConvocarButton } from "./convocar-button"
 
 type StatusConvocacao =
   | "disponivel"
@@ -8,6 +9,7 @@ type StatusConvocacao =
   | "timeout"
 
 type Props = {
+  vagaId: string
   posicao: number
   nome: string
   cargo: string
@@ -19,6 +21,7 @@ type Props = {
 }
 
 export function CandidatoOperacionalCard({
+  vagaId,
   posicao,
   nome,
   cargo,
@@ -40,32 +43,33 @@ export function CandidatoOperacionalCard({
         <div>
           <div className="mb-3 flex items-center gap-3">
             <h3 className="text-xl font-bold text-white">
-              TOP {posicao} · {nome}
+              TOP {posicao} · {nome || colaboradorId}
             </h3>
 
             <ConvocacaoStatus status={status} />
           </div>
 
-          <p className="text-slate-400">{cargo}</p>
+          <p className="text-slate-400">
+            {cargo || "Cargo não informado"}
+          </p>
         </div>
 
         <div className="text-right">
           <p className="text-sm text-slate-500">Score</p>
+
           <h2 className="text-4xl font-bold text-emerald-400">
-            {score}
+            {score ?? 0}
           </h2>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
-        <Info titulo="Distância" valor={distancia} />
-        <Info titulo="Custo" valor={custo} />
-        <Info titulo="ID" valor={colaboradorId} />
+        <Info titulo="Distância" valor={distancia || "-"} />
+        <Info titulo="Custo" valor={custo || "-"} />
+        <Info titulo="ID" valor={colaboradorId || "-"} />
       </div>
 
-      <button className="mt-6 w-full rounded-xl bg-blue-600 py-3 font-bold transition-all hover:bg-blue-500">
-        Convocar Colaborador
-      </button>
+      <ConvocarButton vagaId={vagaId} />
     </div>
   )
 }
