@@ -1,13 +1,22 @@
 import { CandidatoOperacionalCard } from "@/components/operational/candidato-operacional-card"
 
+type StatusConvocacao =
+  | "disponivel"
+  | "convocado"
+  | "aceito"
+  | "recusado"
+  | "timeout"
+
 type RankingItem = {
   colaborador_id: string
-  nome: string
-  cargo: string
+  nome?: string | null
+  cargo?: string | null
   score_final?: number
   score?: number
-  distancia_km: number | null
-  tipo_custo: string
+  score_ranking?: number
+  distancia_km?: number | null
+  tipo_custo?: string | null
+  status?: StatusConvocacao
 }
 
 type Props = {
@@ -28,31 +37,26 @@ export function Top5Ranking({ ranking, vagaId }: Props) {
     <div className="space-y-4">
       {ranking.map((colaborador, index) => (
         <CandidatoOperacionalCard
-          key={colaborador.colaborador_id}
+          key={`${colaborador.colaborador_id}-${index}`}
           vagaId={vagaId}
           posicao={index + 1}
-          nome={colaborador.nome}
-          cargo={colaborador.cargo}
-          score={colaborador.score_final ?? colaborador.score ?? 0}
+          nome={colaborador.nome || colaborador.colaborador_id}
+          cargo={colaborador.cargo || "Cargo não informado"}
+          score={
+            colaborador.score_final ??
+            colaborador.score ??
+            colaborador.score_ranking ??
+            0
+          }
           distancia={
             colaborador.distancia_km !== null &&
             colaborador.distancia_km !== undefined
               ? `${colaborador.distancia_km} km`
               : "-"
           }
-          custo={colaborador.tipo_custo}
+          custo={colaborador.tipo_custo || "-"}
           colaboradorId={colaborador.colaborador_id}
-          status={
-            index === 0
-              ? "convocado"
-              : index === 1
-              ? "disponivel"
-              : index === 2
-              ? "aceito"
-              : index === 3
-              ? "recusado"
-              : "timeout"
-          }
+          status={colaborador.status ?? "disponivel"}
         />
       ))}
     </div>
