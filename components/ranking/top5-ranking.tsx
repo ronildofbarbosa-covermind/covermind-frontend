@@ -24,7 +24,10 @@ type Props = {
   vagaId: string
 }
 
-export function Top5Ranking({ ranking, vagaId }: Props) {
+export function Top5Ranking({
+  ranking,
+  vagaId,
+}: Props) {
   if (!ranking || ranking.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-700 bg-[#020817] p-5 text-slate-400">
@@ -37,7 +40,7 @@ export function Top5Ranking({ ranking, vagaId }: Props) {
     <div className="space-y-4">
       {ranking.map((colaborador, index) => (
         <CandidatoOperacionalCard
-          key={`${colaborador.colaborador_id}-${index}`}
+          key={`${colaborador.colaborador_id}-${colaborador.status ?? "sem-status"}-${index}`}
           vagaId={vagaId}
           posicao={index + 1}
           nome={colaborador.nome || colaborador.colaborador_id}
@@ -57,6 +60,7 @@ export function Top5Ranking({ ranking, vagaId }: Props) {
           custo={colaborador.tipo_custo || "-"}
           colaboradorId={colaborador.colaborador_id}
           status={colaborador.status ?? "disponivel"}
+          mostrarBotaoConvocar={false}
         />
       ))}
     </div>

@@ -18,6 +18,7 @@ type Props = {
   custo: string
   colaboradorId: string
   status?: StatusConvocacao
+  mostrarBotaoConvocar?: boolean
 }
 
 export function CandidatoOperacionalCard({
@@ -30,6 +31,7 @@ export function CandidatoOperacionalCard({
   custo,
   colaboradorId,
   status = "disponivel",
+  mostrarBotaoConvocar = true,
 }: Props) {
   return (
     <div
@@ -55,7 +57,9 @@ export function CandidatoOperacionalCard({
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-slate-500">Score</p>
+          <p className="text-sm text-slate-500">
+            Score
+          </p>
 
           <h2 className="text-4xl font-bold text-emerald-400">
             {score ?? 0}
@@ -64,12 +68,25 @@ export function CandidatoOperacionalCard({
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
-        <Info titulo="Distância" valor={distancia || "-"} />
-        <Info titulo="Custo" valor={custo || "-"} />
-        <Info titulo="ID" valor={colaboradorId || "-"} />
+        <Info
+          titulo="Distância"
+          valor={distancia || "-"}
+        />
+
+        <Info
+          titulo="Custo"
+          valor={custo || "-"}
+        />
+
+        <Info
+          titulo="ID"
+          valor={colaboradorId || "-"}
+        />
       </div>
 
-      <ConvocarButton vagaId={vagaId} />
+      {mostrarBotaoConvocar && (
+        <ConvocarButton vagaId={vagaId} />
+      )}
     </div>
   )
 }
@@ -83,8 +100,13 @@ function Info({
 }) {
   return (
     <div>
-      <p className="text-sm text-slate-500">{titulo}</p>
-      <p className="font-bold text-white">{valor}</p>
+      <p className="text-sm text-slate-500">
+        {titulo}
+      </p>
+
+      <p className="font-bold text-white">
+        {valor}
+      </p>
     </div>
   )
 }
