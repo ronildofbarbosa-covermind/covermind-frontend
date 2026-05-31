@@ -1,7 +1,6 @@
 import { Sidebar } from "@/components/layout/sidebar"
 import { KPICard } from "@/components/cards/kpi-card"
 import { Top5Ranking } from "@/components/ranking/top5-ranking"
-import { AcoesConvocacao } from "@/components/operational/acoes-convocacao"
 
 import {
   buscarPainelExecutivo,
@@ -9,21 +8,10 @@ import {
   buscarFilaVaga,
 } from "../services/api"
 
-type ItemFila = {
-  id: number
-  colaborador_id: string
-  nome?: string | null
-  cargo?: string | null
-  status: string
-  status_convocacao?: string | null
-  posicao?: number | null
-  ordem_fila?: number | null
-  ordem_convocacao?: number | null
-  score?: number | null
-  score_ranking?: number | null
-  distancia_km?: number | null
-  timeout_segundos?: number | null
-}
+import { ItemFilaOperacional } from "@/types/fila"
+import { obterTop5Ranking } from "@/lib/ranking/top5"
+import { obterFilaConvocacao } from "@/lib/operacional/fila"
+import { FilaConvocacao } from "@/components/operational/fila-convocacao"
 
 export default async function CoberturasPage() {
   const vagaOperacionalId = "VAGA-002"
@@ -36,27 +24,11 @@ export default async function CoberturasPage() {
 
   const filaAtiva = fila?.fila ?? []
 
-  const top5 = filaAtiva.filter(
-  (item: any) =>
-    item.status === "convocado" ||
-    item.status === "pendente" ||
-    item.status_convocacao === "fila" ||
-    item.status_convocacao === "aguardando"
-)
+  const top5 = obterTop5Ranking(filaAtiva)
 
-  const filaOriginal: ItemFila[] = fila?.fila ?? []
+  const filaOriginal: ItemFilaOperacional[] = fila?.fila ?? []
 
-  const filaMap = new Map<string, ItemFila>()
-
-  for (const item of filaOriginal) {
-    filaMap.set(item.colaborador_id, item)
-  }
-
-  const filaConvocacao = Array.from(filaMap.values()).sort((a, b) => {
-    const ordemA = a.posicao ?? a.ordem_fila ?? a.ordem_convocacao ?? 999
-    const ordemB = b.posicao ?? b.ordem_fila ?? b.ordem_convocacao ?? 999
-    return ordemA - ordemB
-  })
+  const filaConvocacao = obterFilaConvocacao(filaOriginal)
 
   const vagasAbertas = resumo?.total_contextos_vulnerabilidade ?? 0
   const postosCriticos = resumo?.postos_maturidade_critica ?? 0
@@ -142,71 +114,7 @@ export default async function CoberturasPage() {
                     Fila de Convocação Ativa
                   </h3>
 
-                  <div className="space-y-4">
-                    {filaConvocacao.length === 0 && (
-                      <div className="rounded-2xl border border-dashed border-slate-700 p-6 text-slate-500">
-                        Nenhum colaborador na fila operacional.
-                      </div>
-                    )}
-
-                    {filaConvocacao.map((item) => {
-                      const nome = item.nome || item.colaborador_id
-                      const cargo = item.cargo || "Colaborador operacional"
-                      const posicao =
-                        item.posicao ??
-                        item.ordem_fila ??
-                        item.ordem_convocacao ??
-                        "-"
-
-                      const score =
-                        item.score ??
-                        item.score_ranking ??
-                        "-"
-
-                      const tempo = item.timeout_segundos ?? 0
-
-                      return (
-                        <div
-                          key={`${item.id}-${item.colaborador_id}-${item.status}`}
-                          className="rounded-2xl border border-slate-800 bg-[#020817] p-5"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="text-lg font-bold">
-                                {nome}
-                              </h4>
-
-                              <p className="mt-1 text-sm text-slate-400">
-                                {cargo} · {item.colaborador_id}
-                              </p>
-                            </div>
-
-                            <StatusBadge status={item.status} />
-                          </div>
-
-                          <div className="mt-5 grid grid-cols-4 gap-4">
-                            <Info titulo="Posição" valor={posicao} />
-                            <Info titulo="Score" valor={score} />
-                            <Info
-                              titulo="Distância"
-                              valor={
-                                item.distancia_km !== null &&
-                                item.distancia_km !== undefined
-                                  ? `${item.distancia_km} km`
-                                  : "-"
-                              }
-                            />
-                            <Info titulo="Tempo" valor={`${tempo}s`} />
-                          </div>
-
-                          {(item.status === "convocado" ||
-                            item.status === "pendente") && (
-                            <AcoesConvocacao convocacaoId={item.id} />
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
+                  <FilaConvocacao fila={filaConvocacao} />
                 </div>
               </section>
 
@@ -240,29 +148,5 @@ function Info({
       <p className="text-sm text-slate-500">{titulo}</p>
       <p className="text-xl font-bold">{valor}</p>
     </div>
-  )
-}
-
-function StatusBadge({
-  status,
-}: {
-  status: string
-}) {
-  const estilos: Record<string, string> = {
-    convocado: "bg-amber-500/20 text-amber-400",
-    aceito: "bg-emerald-500/20 text-emerald-400",
-    recusado: "bg-red-500/20 text-red-400",
-    timeout: "bg-orange-500/20 text-orange-400",
-    cancelado: "bg-slate-500/20 text-slate-300",
-  }
-
-  return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-bold ${
-        estilos[status] ?? "bg-slate-500/20 text-slate-300"
-      }`}
-    >
-      {status}
-    </span>
   )
 }
