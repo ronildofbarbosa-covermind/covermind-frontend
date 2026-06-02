@@ -8,6 +8,10 @@ import { Top5Ranking } from "@/components/ranking/top5-ranking"
 import { FilaConvocacao } from "@/components/operational/fila-convocacao"
 import { ToastOperacional } from "@/components/operational/toast-operacional"
 import { TimelineOperacional } from "@/components/operational/timeline-operacional"
+import { StatusOperacionalCard } from "@/components/operational/status-operacional-card"
+import { SlaOperacionalCard } from "@/components/operational/sla-operacional-card"
+import { PrioridadeOperacionalCard } from "@/components/operational/prioridade-operacional-card"
+import { HeatmapOperacional } from "@/components/operational/heatmap-operacional"
 
 import {
   buscarPainelExecutivo,
@@ -85,6 +89,42 @@ export default function CoberturasPage() {
   const reincidencias = resumo?.total_contextos_reincidencia ?? 0
   const reservaAtencao = resumo?.reserva_operacional_em_atencao ?? 0
 
+  const statusOperacional =
+    reincidencias >= 3
+      ? "CRITICO"
+      : reincidencias >= 1
+        ? "ALERTA"
+        : "NORMAL"
+
+  const slaOperacional =
+    statusOperacional === "CRITICO"
+      ? 48
+      : statusOperacional === "ALERTA"
+        ? 72
+        : 96
+
+  const prioridadeOperacional =
+    statusOperacional === "CRITICO"
+      ? "EMERGENCIAL"
+      : statusOperacional === "ALERTA"
+        ? "ALTA"
+        : "PROGRAMADA"
+
+  const heatmapOperacional = [
+    {
+      filial: "FLORIANÓPOLIS",
+      status: "CRITICO" as const,
+    },
+    {
+      filial: "CURITIBA",
+      status: "ALERTA" as const,
+    },
+    {
+      filial: "JOINVILLE",
+      status: "NORMAL" as const,
+    },
+  ]
+
   return (
     <main className="min-h-screen bg-[#020817] text-white">
       <ToastOperacional mensagem={mensagemOperacional} />
@@ -144,20 +184,44 @@ export default function CoberturasPage() {
                 valor={vagasAbertas}
                 descricao="contextos operacionais"
               />
+
               <KPICard
                 titulo="Postos Críticos"
                 valor={postosCriticos}
                 descricao="baixa maturidade"
               />
+
               <KPICard
                 titulo="Reincidências"
                 valor={reincidencias}
                 descricao="histórico operacional"
               />
+
               <KPICard
                 titulo="Reserva em Atenção"
                 valor={reservaAtencao}
                 descricao="filiais/grupos em alerta"
+              />
+            </div>
+
+            <div className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
+              <StatusOperacionalCard
+                status={statusOperacional}
+                mensagem={
+                  statusOperacional === "CRITICO"
+                    ? "Timeouts e reincidências operacionais detectados"
+                    : statusOperacional === "ALERTA"
+                      ? "Oscilações operacionais monitoradas"
+                      : "Operação saudável e estabilizada"
+                }
+              />
+
+              <PrioridadeOperacionalCard
+                prioridade={prioridadeOperacional}
+              />
+
+              <SlaOperacionalCard
+                percentual={slaOperacional}
               />
             </div>
 
@@ -222,6 +286,12 @@ export default function CoberturasPage() {
                   vagaId={vagaOperacionalId}
                 />
               </section>
+            </div>
+
+            <div className="mt-8">
+              <HeatmapOperacional
+                unidades={heatmapOperacional}
+              />
             </div>
 
             <div className="mt-6">
