@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react"
 
-import { Sidebar } from "@/components/layout/sidebar"
+import { IndicadorCard } from "@/components/analytics/indicador-card"
 import { KPICard } from "@/components/cards/kpi-card"
-import { Top5Ranking } from "@/components/ranking/top5-ranking"
+import { Sidebar } from "@/components/layout/sidebar"
 import { FilaConvocacao } from "@/components/operational/fila-convocacao"
-import { ToastOperacional } from "@/components/operational/toast-operacional"
-import { TimelineOperacional } from "@/components/operational/timeline-operacional"
-import { StatusOperacionalCard } from "@/components/operational/status-operacional-card"
-import { SlaOperacionalCard } from "@/components/operational/sla-operacional-card"
-import { PrioridadeOperacionalCard } from "@/components/operational/prioridade-operacional-card"
 import { HeatmapOperacional } from "@/components/operational/heatmap-operacional"
+import { PrioridadeOperacionalCard } from "@/components/operational/prioridade-operacional-card"
+import { SlaOperacionalCard } from "@/components/operational/sla-operacional-card"
+import { StatusOperacionalCard } from "@/components/operational/status-operacional-card"
+import { TimelineOperacional } from "@/components/operational/timeline-operacional"
+import { ToastOperacional } from "@/components/operational/toast-operacional"
+import { Top5Ranking } from "@/components/ranking/top5-ranking"
+import { obterAnalyticsExecutivos } from "@/lib/analytics/indicadores-executivos"
+import { TendenciaOperacionalCard } from "@/components/analytics/tendencia-operacional-card"
+import { FilialAnalyticsCard } from "@/components/analytics/filial-analytics-card"
 
 import {
   buscarPainelExecutivo,
@@ -125,6 +129,8 @@ export default function CoberturasPage() {
     },
   ]
 
+  const analyticsExecutivos = obterAnalyticsExecutivos()
+
   return (
     <main className="min-h-screen bg-[#020817] text-white">
       <ToastOperacional mensagem={mensagemOperacional} />
@@ -204,7 +210,94 @@ export default function CoberturasPage() {
               />
             </div>
 
-            <div className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold">
+                Analytics Executivo Inteligente
+              </h2>
+
+              <p className="mt-2 text-sm text-slate-400">
+                Indicadores estratégicos da operação em tempo real.
+              </p>
+            </div>
+
+            <div className="mb-8 grid gap-6 lg:grid-cols-3">
+              <IndicadorCard
+                titulo="Taxa de Cobertura"
+                valor={analyticsExecutivos.taxaCobertura}
+                descricao="Coberturas concluídas com sucesso"
+              />
+
+              <IndicadorCard
+                titulo="Taxa de Aceite"
+                valor={analyticsExecutivos.taxaAceite}
+                descricao="Aceites realizados nas convocações"
+              />
+
+              <IndicadorCard
+                titulo="Taxa de Recusa"
+                valor={analyticsExecutivos.taxaRecusa}
+                descricao="Convocações recusadas"
+              />
+            </div>
+            <div className="mb-8">
+              <TendenciaOperacionalCard
+                percentual={
+                  analyticsExecutivos.tendenciaOperacional
+                }
+              />
+            </div>
+
+            <div className="mb-8 grid gap-6 lg:grid-cols-3">
+              <FilialAnalyticsCard
+                titulo="Filial Mais Crítica"
+                filial={
+                  analyticsExecutivos.filialMaisCritica
+                }
+                status="CRITICO"
+                descricao="Maior pressão operacional identificada"
+              />
+
+              <FilialAnalyticsCard
+                titulo="Filial Mais Estável"
+                filial={
+                  analyticsExecutivos.filialMaisEstavel
+                }
+                status="NORMAL"
+                descricao="Melhor estabilidade operacional"
+              />
+
+              <FilialAnalyticsCard
+                titulo="Maior Pressão Regional"
+                filial={
+                  analyticsExecutivos.maiorPressaoRegional
+                }
+                status="ALERTA"
+                descricao="Aumento de demanda operacional"
+              />
+            </div>
+
+
+            <div className="mb-8 grid gap-6 lg:grid-cols-3">
+              <IndicadorCard
+                titulo="TMC"
+                valor={analyticsExecutivos.tmc}
+                descricao="Tempo médio entre ocorrência e assunção validada do posto"
+              />
+
+              <IndicadorCard
+                titulo="TMA"
+                valor={analyticsExecutivos.tma}
+                descricao="Tempo médio entre primeira convocação e aceite"
+              />
+
+              <IndicadorCard
+                titulo="TMD"
+                valor={analyticsExecutivos.tmd}
+                descricao="Tempo médio entre aceite e chegada ao posto"
+              />
+            </div>
+
+            <div className="mb-8 grid gap-6 lg:grid-cols-3">
               <StatusOperacionalCard
                 status={statusOperacional}
                 mensagem={
@@ -289,9 +382,7 @@ export default function CoberturasPage() {
             </div>
 
             <div className="mt-8">
-              <HeatmapOperacional
-                unidades={heatmapOperacional}
-              />
+              <HeatmapOperacional unidades={heatmapOperacional} />
             </div>
 
             <div className="mt-6">
