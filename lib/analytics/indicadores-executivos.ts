@@ -1,7 +1,4 @@
 export type AnalyticsExecutivos = {
-  filialMaisCritica: string
-  filialMaisEstavel: string
-  maiorPressaoRegional: string
   taxaCobertura: string
   taxaAceite: string
   taxaRecusa: string
@@ -9,6 +6,12 @@ export type AnalyticsExecutivos = {
   tma: string
   tmd: string
   tendenciaOperacional: number
+  filialMaisCritica: string
+  filialMaisEstavel: string
+  maiorPressaoRegional: string
+  clienteMaisCritico: string
+  clienteMaisEstavel: string
+  maiorConsumoCobertura: string
 }
 
 export function obterAnalyticsExecutivos(): AnalyticsExecutivos {
@@ -23,5 +26,8 @@ export function obterAnalyticsExecutivos(): AnalyticsExecutivos {
     filialMaisCritica: "FLORIANÓPOLIS",
     filialMaisEstavel: "JOINVILLE",
     maiorPressaoRegional: "CURITIBA",
+    clienteMaisCritico: "Cliente Ômega",
+    clienteMaisEstavel: "Cliente Alfa",
+    maiorConsumoCobertura: "Cliente Beta",
   }
 }

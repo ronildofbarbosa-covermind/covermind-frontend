@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react"
 
+import { ClienteAnalyticsCard } from "@/components/analytics/cliente-analytics-card"
+import { FilialAnalyticsCard } from "@/components/analytics/filial-analytics-card"
 import { IndicadorCard } from "@/components/analytics/indicador-card"
+import { TendenciaOperacionalCard } from "@/components/analytics/tendencia-operacional-card"
 import { KPICard } from "@/components/cards/kpi-card"
 import { Sidebar } from "@/components/layout/sidebar"
 import { FilaConvocacao } from "@/components/operational/fila-convocacao"
@@ -13,16 +16,14 @@ import { StatusOperacionalCard } from "@/components/operational/status-operacion
 import { TimelineOperacional } from "@/components/operational/timeline-operacional"
 import { ToastOperacional } from "@/components/operational/toast-operacional"
 import { Top5Ranking } from "@/components/ranking/top5-ranking"
+import { useFilaOperacional } from "@/hooks/use-fila-operacional"
+import { useRealtimeOperacional } from "@/hooks/use-realtime-operacional"
 import { obterAnalyticsExecutivos } from "@/lib/analytics/indicadores-executivos"
-import { TendenciaOperacionalCard } from "@/components/analytics/tendencia-operacional-card"
-import { FilialAnalyticsCard } from "@/components/analytics/filial-analytics-card"
 
 import {
   buscarPainelExecutivo,
   buscarRankingVaga,
 } from "../services/api"
-
-import { useFilaOperacional } from "@/hooks/use-fila-operacional"
 
 type ResumoExecutivo = {
   total_contextos_vulnerabilidade?: number
@@ -61,6 +62,8 @@ export default function CoberturasPage() {
     mensagemOperacional,
     eventos,
   } = useFilaOperacional(vagaOperacionalId)
+
+  useRealtimeOperacional()
 
   useEffect(() => {
     async function carregarDadosGerais() {
@@ -165,7 +168,7 @@ export default function CoberturasPage() {
                 <p className="text-sm text-slate-400">Backend FastAPI</p>
 
                 <h2 className="mt-2 text-2xl font-bold text-emerald-400">
-                  {painel ? "ONLINE" : "CARREGANDO"}
+                  {painel ? "ONLINE" : "OFFLINE"}
                 </h2>
 
                 <p className="mt-2 text-sm text-slate-500">
@@ -210,92 +213,109 @@ export default function CoberturasPage() {
               />
             </div>
 
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold">
-                Analytics Executivo Inteligente
-              </h2>
+            <section className="mb-8">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold">
+                  Analytics Executivo Inteligente
+                </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
-                Indicadores estratégicos da operação em tempo real.
-              </p>
-            </div>
+                <p className="mt-2 text-sm text-slate-400">
+                  Indicadores estratégicos da operação em tempo real.
+                </p>
+              </div>
 
-            <div className="mb-8 grid gap-6 lg:grid-cols-3">
-              <IndicadorCard
-                titulo="Taxa de Cobertura"
-                valor={analyticsExecutivos.taxaCobertura}
-                descricao="Coberturas concluídas com sucesso"
-              />
+              <div className="mb-8 grid gap-6 lg:grid-cols-3">
+                <IndicadorCard
+                  titulo="Taxa de Cobertura"
+                  valor={analyticsExecutivos.taxaCobertura}
+                  descricao="Coberturas concluídas com sucesso"
+                />
 
-              <IndicadorCard
-                titulo="Taxa de Aceite"
-                valor={analyticsExecutivos.taxaAceite}
-                descricao="Aceites realizados nas convocações"
-              />
+                <IndicadorCard
+                  titulo="Taxa de Aceite"
+                  valor={analyticsExecutivos.taxaAceite}
+                  descricao="Aceites realizados nas convocações"
+                />
 
-              <IndicadorCard
-                titulo="Taxa de Recusa"
-                valor={analyticsExecutivos.taxaRecusa}
-                descricao="Convocações recusadas"
-              />
-            </div>
-            <div className="mb-8">
-              <TendenciaOperacionalCard
-                percentual={
-                  analyticsExecutivos.tendenciaOperacional
-                }
-              />
-            </div>
+                <IndicadorCard
+                  titulo="Taxa de Recusa"
+                  valor={analyticsExecutivos.taxaRecusa}
+                  descricao="Convocações recusadas"
+                />
+              </div>
 
-            <div className="mb-8 grid gap-6 lg:grid-cols-3">
-              <FilialAnalyticsCard
-                titulo="Filial Mais Crítica"
-                filial={
-                  analyticsExecutivos.filialMaisCritica
-                }
-                status="CRITICO"
-                descricao="Maior pressão operacional identificada"
-              />
+              <div className="mb-8 grid gap-6 lg:grid-cols-3">
+                <IndicadorCard
+                  titulo="TMC"
+                  valor={analyticsExecutivos.tmc}
+                  descricao="Tempo médio entre ocorrência e assunção validada do posto"
+                />
 
-              <FilialAnalyticsCard
-                titulo="Filial Mais Estável"
-                filial={
-                  analyticsExecutivos.filialMaisEstavel
-                }
-                status="NORMAL"
-                descricao="Melhor estabilidade operacional"
-              />
+                <IndicadorCard
+                  titulo="TMA"
+                  valor={analyticsExecutivos.tma}
+                  descricao="Tempo médio entre primeira convocação e aceite"
+                />
 
-              <FilialAnalyticsCard
-                titulo="Maior Pressão Regional"
-                filial={
-                  analyticsExecutivos.maiorPressaoRegional
-                }
-                status="ALERTA"
-                descricao="Aumento de demanda operacional"
-              />
-            </div>
+                <IndicadorCard
+                  titulo="TMD"
+                  valor={analyticsExecutivos.tmd}
+                  descricao="Tempo médio entre aceite e chegada ao posto"
+                />
+              </div>
 
+              <div className="mb-8">
+                <TendenciaOperacionalCard
+                  percentual={analyticsExecutivos.tendenciaOperacional}
+                />
+              </div>
 
-            <div className="mb-8 grid gap-6 lg:grid-cols-3">
-              <IndicadorCard
-                titulo="TMC"
-                valor={analyticsExecutivos.tmc}
-                descricao="Tempo médio entre ocorrência e assunção validada do posto"
-              />
+              <div className="mb-8 grid gap-6 lg:grid-cols-3">
+                <FilialAnalyticsCard
+                  titulo="Filial Mais Crítica"
+                  filial={analyticsExecutivos.filialMaisCritica}
+                  status="CRITICO"
+                  descricao="Maior pressão operacional identificada"
+                />
 
-              <IndicadorCard
-                titulo="TMA"
-                valor={analyticsExecutivos.tma}
-                descricao="Tempo médio entre primeira convocação e aceite"
-              />
+                <FilialAnalyticsCard
+                  titulo="Filial Mais Estável"
+                  filial={analyticsExecutivos.filialMaisEstavel}
+                  status="NORMAL"
+                  descricao="Melhor estabilidade operacional"
+                />
 
-              <IndicadorCard
-                titulo="TMD"
-                valor={analyticsExecutivos.tmd}
-                descricao="Tempo médio entre aceite e chegada ao posto"
-              />
-            </div>
+                <FilialAnalyticsCard
+                  titulo="Maior Pressão Regional"
+                  filial={analyticsExecutivos.maiorPressaoRegional}
+                  status="ALERTA"
+                  descricao="Aumento de demanda operacional"
+                />
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-3">
+                <ClienteAnalyticsCard
+                  titulo="Cliente Mais Crítico"
+                  cliente={analyticsExecutivos.clienteMaisCritico}
+                  status="CRITICO"
+                  descricao="Maior risco operacional identificado"
+                />
+
+                <ClienteAnalyticsCard
+                  titulo="Cliente Mais Estável"
+                  cliente={analyticsExecutivos.clienteMaisEstavel}
+                  status="NORMAL"
+                  descricao="Maior estabilidade contratual"
+                />
+
+                <ClienteAnalyticsCard
+                  titulo="Maior Consumo de Cobertura"
+                  cliente={analyticsExecutivos.maiorConsumoCobertura}
+                  status="ALERTA"
+                  descricao="Maior demanda operacional registrada"
+                />
+              </div>
+            </section>
 
             <div className="mb-8 grid gap-6 lg:grid-cols-3">
               <StatusOperacionalCard
@@ -381,8 +401,10 @@ export default function CoberturasPage() {
               </section>
             </div>
 
-            <div className="mt-8">
-              <HeatmapOperacional unidades={heatmapOperacional} />
+            <div className="mt-6">
+              <HeatmapOperacional
+                unidades={heatmapOperacional}
+              />
             </div>
 
             <div className="mt-6">
