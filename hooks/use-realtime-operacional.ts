@@ -6,11 +6,9 @@ import { supabase } from "@/lib/supabase/client"
 
 export function useRealtimeOperacional() {
   useEffect(() => {
-    const channel = supabase.channel(
-      "operacao-tempo-real"
-    )
+    const channel = supabase
+      .channel("operacao-tempo-real")
 
-    channel
       .on(
         "postgres_changes",
         {
@@ -19,13 +17,15 @@ export function useRealtimeOperacional() {
           table: "convocacoes",
         },
         (payload) => {
-          console.log(
-            "Realtime convocações:",
-            payload
-          )
+          console.log("Realtime convocações:", payload)
+
+          window.location.reload()
         }
       )
-      .subscribe()
+
+      .subscribe((status) => {
+        console.log("Status realtime:", status)
+      })
 
     return () => {
       supabase.removeChannel(channel)
