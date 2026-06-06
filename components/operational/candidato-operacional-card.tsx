@@ -1,3 +1,4 @@
+
 import { ConvocacaoStatus } from "./convocacao-status"
 import { ConvocarButton } from "./convocar-button"
 
@@ -7,6 +8,7 @@ type StatusConvocacao =
   | "aceito"
   | "recusado"
   | "timeout"
+  | "cancelado"
 
 type Props = {
   vagaId: string
@@ -33,13 +35,33 @@ export function CandidatoOperacionalCard({
   status = "disponivel",
   mostrarBotaoConvocar = true,
 }: Props) {
-  return (
-    <div
-      className={`rounded-2xl border p-5 ${
-        posicao === 1
+  function obterEstiloStatus() {
+    switch (status) {
+      case "aceito":
+        return "border-emerald-500 bg-emerald-950/20 shadow-[0_0_25px_rgba(16,185,129,0.15)]"
+
+      case "convocado":
+        return "border-cyan-500 bg-cyan-950/10 animate-pulse"
+
+      case "recusado":
+        return "border-red-500 bg-red-950/10"
+
+      case "timeout":
+        return "border-amber-500 bg-amber-950/10"
+
+      case "cancelado":
+        return "border-slate-700 bg-slate-900/60 opacity-70"
+
+      default:
+        return posicao === 1
           ? "border-emerald-500 bg-[#020817]"
           : "border-slate-800 bg-[#020817]"
-      }`}
+    }
+  }
+
+  return (
+    <div
+      className={`rounded-2xl border p-5 transition-all duration-500 ${obterEstiloStatus()}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -61,7 +83,17 @@ export function CandidatoOperacionalCard({
             Score
           </p>
 
-          <h2 className="text-4xl font-bold text-emerald-400">
+          <h2
+            className={`text-4xl font-bold ${
+              status === "aceito"
+                ? "text-emerald-300"
+                : status === "recusado"
+                ? "text-red-400"
+                : status === "timeout"
+                ? "text-amber-400"
+                : "text-emerald-400"
+            }`}
+          >
             {score ?? 0}
           </h2>
         </div>

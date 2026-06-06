@@ -19,6 +19,10 @@ import { Top5Ranking } from "@/components/ranking/top5-ranking"
 import { useFilaOperacional } from "@/hooks/use-fila-operacional"
 import { useRealtimeOperacional } from "@/hooks/use-realtime-operacional"
 import { obterAnalyticsExecutivos } from "@/lib/analytics/indicadores-executivos"
+import {
+  buscarEventosOperacionais,
+  EventoOperacional,
+} from "@/lib/operacional/eventos-operacionais"
 
 import {
   buscarPainelExecutivo,
@@ -52,6 +56,7 @@ export default function CoberturasPage() {
   const [ranking, setRanking] = useState<RankingVaga | null>(null)
   const [carregandoPainel, setCarregandoPainel] = useState(true)
   const [erroPainel, setErroPainel] = useState<string | null>(null)
+  const [eventosOperacionais, setEventosOperacionais] = useState<EventoOperacional[]>([])
 
   const {
     fila: filaConvocacao,
@@ -71,13 +76,19 @@ export default function CoberturasPage() {
         setCarregandoPainel(true)
         setErroPainel(null)
 
-        const [painelResposta, rankingResposta] = await Promise.all([
+        const [
+          painelResposta,
+          rankingResposta,
+          eventosResposta,
+        ] = await Promise.all([
           buscarPainelExecutivo(),
           buscarRankingVaga(vagaOperacionalId),
+          buscarEventosOperacionais(),
         ])
 
         setPainel(painelResposta)
         setRanking(rankingResposta)
+        setEventosOperacionais(eventosResposta)
       } catch (error) {
         console.error(error)
         setErroPainel("Erro ao carregar dados gerais do painel")
@@ -133,6 +144,9 @@ export default function CoberturasPage() {
   ]
 
   const analyticsExecutivos = obterAnalyticsExecutivos()
+
+  const eventosTimeline =
+    eventosOperacionais.length > 0 ? eventosOperacionais : eventos
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -408,7 +422,7 @@ export default function CoberturasPage() {
             </div>
 
             <div className="mt-6">
-              <TimelineOperacional eventos={eventos} />
+              <TimelineOperacional eventos={eventosTimeline} />
             </div>
           </div>
         </section>

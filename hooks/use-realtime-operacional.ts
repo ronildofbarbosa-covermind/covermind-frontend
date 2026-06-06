@@ -12,12 +12,12 @@ export function useRealtimeOperacional() {
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
-          table: "convocacoes",
+          table: "eventos_operacionais",
         },
         (payload) => {
-          console.log("Realtime convocações:", payload)
+          console.log("Evento operacional realtime:", payload)
 
           window.location.reload()
         }
