@@ -1,5 +1,8 @@
 "use client"
 
+import { gerarDecisaoIA } from "@/lib/operacional/motor-decisao-ia"
+import { gerarAnalisePreditiva } from "@/lib/operacional/ia-preditiva-operacional"
+import { analisarTendenciaOperacional } from "@/lib/operacional/tendencia-operacional"
 import { useEffect, useState } from "react"
 
 import { ClienteAnalyticsCard } from "@/components/analytics/cliente-analytics-card"
@@ -8,21 +11,24 @@ import { IndicadorCard } from "@/components/analytics/indicador-card"
 import { TendenciaOperacionalCard } from "@/components/analytics/tendencia-operacional-card"
 import { KPICard } from "@/components/cards/kpi-card"
 import { Sidebar } from "@/components/layout/sidebar"
+import { DecisaoIACard } from "@/components/operational/decisao-ia-card"
 import { FilaConvocacao } from "@/components/operational/fila-convocacao"
 import { HeatmapOperacional } from "@/components/operational/heatmap-operacional"
+import { IAPreditivaCard } from "@/components/operational/ia-preditiva-card"
 import { PrioridadeOperacionalCard } from "@/components/operational/prioridade-operacional-card"
 import { SlaOperacionalCard } from "@/components/operational/sla-operacional-card"
 import { StatusOperacionalCard } from "@/components/operational/status-operacional-card"
+import { TendenciaIACard } from "@/components/operational/tendencia-ia-card"
 import { TimelineOperacional } from "@/components/operational/timeline-operacional"
 import { ToastOperacional } from "@/components/operational/toast-operacional"
 import { Top5Ranking } from "@/components/ranking/top5-ranking"
 import { useFilaOperacional } from "@/hooks/use-fila-operacional"
 import { useRealtimeOperacional } from "@/hooks/use-realtime-operacional"
 import { obterAnalyticsExecutivos } from "@/lib/analytics/indicadores-executivos"
-import {
-  buscarEventosOperacionais,
-  EventoOperacional,
-} from "@/lib/operacional/eventos-operacionais"
+import { gerarExplicacaoIA } from "@/lib/operacional/explicacao-ia"
+import { ExplicacaoIACard } from "@/components/operational/explicacao-ia-card"
+import { calcularScoreConfiabilidade } from "@/lib/operacional/score-confiabilidade"
+import { ConfiabilidadeIACard } from "@/components/operational/confiabilidade-ia-card"
 
 import {
   buscarPainelExecutivo,
@@ -56,7 +62,6 @@ export default function CoberturasPage() {
   const [ranking, setRanking] = useState<RankingVaga | null>(null)
   const [carregandoPainel, setCarregandoPainel] = useState(true)
   const [erroPainel, setErroPainel] = useState<string | null>(null)
-  const [eventosOperacionais, setEventosOperacionais] = useState<EventoOperacional[]>([])
 
   const {
     fila: filaConvocacao,
@@ -76,19 +81,13 @@ export default function CoberturasPage() {
         setCarregandoPainel(true)
         setErroPainel(null)
 
-        const [
-          painelResposta,
-          rankingResposta,
-          eventosResposta,
-        ] = await Promise.all([
+        const [painelResposta, rankingResposta] = await Promise.all([
           buscarPainelExecutivo(),
           buscarRankingVaga(vagaOperacionalId),
-          buscarEventosOperacionais(),
         ])
 
         setPainel(painelResposta)
         setRanking(rankingResposta)
-        setEventosOperacionais(eventosResposta)
       } catch (error) {
         console.error(error)
         setErroPainel("Erro ao carregar dados gerais do painel")
@@ -128,6 +127,28 @@ export default function CoberturasPage() {
         ? "ALTA"
         : "PROGRAMADA"
 
+  const decisaoIA = gerarDecisaoIA({
+    reincidencias,
+    postosCriticos,
+    reservaAtencao,
+  })
+
+  const recusasOperacionais = filaConvocacao.filter(
+    (item) => item.status === "recusado"
+  ).length
+
+  const timeoutOperacional = filaConvocacao.filter(
+    (item) => item.status === "timeout"
+  ).length
+
+  const analisePreditiva = gerarAnalisePreditiva({
+    reincidencias,
+    recusas: recusasOperacionais,
+    timeout: timeoutOperacional,
+    postosCriticos,
+    reservaAtencao,
+  })
+
   const heatmapOperacional = [
     {
       filial: "FLORIANÓPOLIS",
@@ -145,8 +166,38 @@ export default function CoberturasPage() {
 
   const analyticsExecutivos = obterAnalyticsExecutivos()
 
-  const eventosTimeline =
-    eventosOperacionais.length > 0 ? eventosOperacionais : eventos
+  const variacaoBaseTendencia = Math.round(
+    analyticsExecutivos.tendenciaOperacional / 3
+  )
+
+  const scoreAnteriorOperacional = Math.max(
+    0,
+    analisePreditiva.score + variacaoBaseTendencia
+  )
+
+  const tendenciaIA = analisarTendenciaOperacional({
+    scoreAtual: analisePreditiva.score,
+    scoreAnterior: scoreAnteriorOperacional,
+  })
+
+  const melhorColaborador = top5[0]
+
+  const explicacaoIA = gerarExplicacaoIA({
+    nome: melhorColaborador?.nome ?? "Colaborador operacional",
+    score: melhorColaborador?.score ?? 0,
+    distanciaKm: melhorColaborador?.distancia_km ?? 0,
+    vezesNoPosto: 12,
+    recusasRecentes: 0,
+    custoEstimado: 95,
+  })
+
+  const confiabilidadeIA = calcularScoreConfiabilidade({
+    taxaAceite: analyticsExecutivos?.taxaAceite ?? 85,
+    taxaRecusa: analyticsExecutivos?.taxaRecusa ?? 12,
+    taxaAtraso: analisePreditiva?.riscoAbandono ?? 8,
+    coberturasRealizadas: 12,
+    reincidencias: reincidencias ?? 0,
+  })
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -416,13 +467,58 @@ export default function CoberturasPage() {
             </div>
 
             <div className="mt-6">
+              <DecisaoIACard
+                titulo={decisaoIA.titulo}
+                descricao={decisaoIA.descricao}
+                nivel={decisaoIA.nivel}
+                recomendacao={decisaoIA.recomendacao}
+                impacto={decisaoIA.impacto}
+              />
+            </div>
+
+            <div className="mt-6">
+              <IAPreditivaCard
+                score={analisePreditiva.score}
+                nivel={analisePreditiva.nivel}
+                riscoSLA={analisePreditiva.riscoSLA}
+                riscoAbandono={analisePreditiva.riscoAbandono}
+                riscoReincidencia={analisePreditiva.riscoReincidencia}
+                mensagem={analisePreditiva.mensagem}
+              />
+            </div>
+
+            <div className="mt-6">
+              <TendenciaIACard
+                tendencia={tendenciaIA.tendencia}
+                mensagem={tendenciaIA.mensagem}
+                variacao={tendenciaIA.variacao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <ExplicacaoIACard
+                titulo={explicacaoIA.titulo}
+                motivos={explicacaoIA.motivos}
+                impactoEsperado={explicacaoIA.impactoEsperado}
+              />
+            </div>
+
+            <div className="mt-6">
+              <ConfiabilidadeIACard
+                score={confiabilidadeIA.score}
+                nivel={confiabilidadeIA.nivel}
+                mensagem={confiabilidadeIA.mensagem}
+              />
+            </div>
+
+            <div className="mt-6">
               <HeatmapOperacional
                 unidades={heatmapOperacional}
               />
             </div>
 
             <div className="mt-6">
-              <TimelineOperacional eventos={eventosTimeline} />
+              <TimelineOperacional eventos={eventos} />
             </div>
           </div>
         </section>
