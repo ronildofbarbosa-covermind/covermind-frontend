@@ -29,6 +29,12 @@ import { gerarExplicacaoIA } from "@/lib/operacional/explicacao-ia"
 import { ExplicacaoIACard } from "@/components/operational/explicacao-ia-card"
 import { calcularScoreConfiabilidade } from "@/lib/operacional/score-confiabilidade"
 import { ConfiabilidadeIACard } from "@/components/operational/confiabilidade-ia-card"
+import { analisarMemoriaOperacional } from "@/lib/operacional/memoria-operacional"
+import { MemoriaOperacionalCard } from "@/components/operational/memoria-operacional-card"
+import { calcularRiscoOperacionalTempoReal } from "@/lib/operacional/risco-operacional-tempo-real"
+import { RiscoTempoRealCard } from "@/components/operational/risco-tempo-real-card"
+import { gerarContingenciaAdaptativa } from "@/lib/operacional/contingencia-adaptativa"
+import { ContingenciaAdaptativaCard } from "@/components/operational/contingencia-adaptativa-card"
 
 import {
   buscarPainelExecutivo,
@@ -197,6 +203,30 @@ export default function CoberturasPage() {
     taxaAtraso: analisePreditiva?.riscoAbandono ?? 8,
     coberturasRealizadas: 12,
     reincidencias: reincidencias ?? 0,
+  })
+
+  const memoriaOperacionalIA = analisarMemoriaOperacional({
+    cliente: ranking?.cliente ?? "Cliente não informado",
+    filial: ranking?.filial ?? "Filial não informada",
+    tipoPosto: ranking?.posto ?? "Posto operacional",
+    reincidencias,
+    recusas: recusasOperacionais,
+    emergencias: postosCriticos,
+  })
+
+  const riscoTempoReal = calcularRiscoOperacionalTempoReal({
+    recusas: recusasOperacionais,
+    timeout: timeoutOperacional,
+    slaAtual: slaOperacional,
+    postosDescobertos: vagasAbertas,
+    filaRestante: filaConvocacao.length,
+  })
+
+  const contingenciaIA = gerarContingenciaAdaptativa({
+    nivelRisco: riscoTempoReal.nivel,
+    filaRestante: filaConvocacao.length,
+    recusas: recusasOperacionais,
+    postosDescobertos: vagasAbertas,
   })
 
   return (
@@ -508,6 +538,31 @@ export default function CoberturasPage() {
                 score={confiabilidadeIA.score}
                 nivel={confiabilidadeIA.nivel}
                 mensagem={confiabilidadeIA.mensagem}
+              />
+            </div>
+
+            <div className="mt-6">
+              <MemoriaOperacionalCard
+                nivel={memoriaOperacionalIA.nivel}
+                memoria={memoriaOperacionalIA.memoria}
+                recomendacao={memoriaOperacionalIA.recomendacao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <RiscoTempoRealCard
+                nivel={riscoTempoReal.nivel}
+                score={riscoTempoReal.score}
+                descricao={riscoTempoReal.descricao}
+                recomendacao={riscoTempoReal.recomendacao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <ContingenciaAdaptativaCard
+                severidade={contingenciaIA.severidade}
+                acoes={contingenciaIA.acoes}
+                recomendacao={contingenciaIA.recomendacao}
               />
             </div>
 
