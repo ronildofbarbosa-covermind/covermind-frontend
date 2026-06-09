@@ -35,6 +35,14 @@ import { calcularRiscoOperacionalTempoReal } from "@/lib/operacional/risco-opera
 import { RiscoTempoRealCard } from "@/components/operational/risco-tempo-real-card"
 import { gerarContingenciaAdaptativa } from "@/lib/operacional/contingencia-adaptativa"
 import { ContingenciaAdaptativaCard } from "@/components/operational/contingencia-adaptativa-card"
+import { calcularIndiceExecutivoOperacional } from "@/lib/operacional/indice-executivo-operacional"
+import { IndiceExecutivoCard } from "@/components/operational/indice-executivo-card"
+import { gerarRadarRegionalOperacional } from "@/lib/operacional/radar-regional-operacional"
+import { RadarRegionalCard } from "@/components/operational/radar-regional-card"
+import { calcularSaudeOperacionalCorporativa } from "@/lib/operacional/saude-operacional-corporativa"
+import { SaudeCorporativaCard } from "@/components/operational/saude-corporativa-card"
+import { gerarUnidadeHeatmapInteligente } from "@/lib/operacional/heatmap-inteligente"
+import { HeatmapInteligenteCard } from "@/components/operational/heatmap-inteligente-card"
 
 import {
   buscarPainelExecutivo,
@@ -228,6 +236,56 @@ export default function CoberturasPage() {
     recusas: recusasOperacionais,
     postosDescobertos: vagasAbertas,
   })
+
+  const indiceExecutivoIA = calcularIndiceExecutivoOperacional({
+    sla: slaOperacional,
+    recusas: recusasOperacionais,
+    reincidencias,
+    risco: riscoTempoReal.score,
+    estabilidade: confiabilidadeIA.score,
+  })
+
+  const radarRegionalIA = gerarRadarRegionalOperacional({
+    filial: ranking?.filial ?? "FILIAL OPERACIONAL",
+    risco: riscoTempoReal.score,
+    reincidencias,
+    recusas: recusasOperacionais,
+    sla: slaOperacional,
+  })
+
+  const saudeCorporativaIA =
+    calcularSaudeOperacionalCorporativa({
+      sla: slaOperacional,
+      risco: riscoTempoReal.score,
+      estabilidade: confiabilidadeIA.score,
+      recusas: recusasOperacionais,
+      reincidencias,
+      contingencias: contingenciaIA.acoes.length,
+    })
+
+  const heatmapInteligenteIA = [
+    gerarUnidadeHeatmapInteligente({
+      filial: "FLORIANÓPOLIS",
+      risco: riscoTempoReal.score + 20,
+      reincidencias: reincidencias + 1,
+      recusas: recusasOperacionais,
+      sla: Math.max(0, slaOperacional - 20),
+    }),
+    gerarUnidadeHeatmapInteligente({
+      filial: ranking?.filial ?? "CURITIBA",
+      risco: riscoTempoReal.score,
+      reincidencias,
+      recusas: recusasOperacionais,
+      sla: slaOperacional,
+    }),
+    gerarUnidadeHeatmapInteligente({
+      filial: "JOINVILLE",
+      risco: Math.max(0, riscoTempoReal.score - 35),
+      reincidencias: 0,
+      recusas: 0,
+      sla: 96,
+    }),
+  ]
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -564,6 +622,35 @@ export default function CoberturasPage() {
                 acoes={contingenciaIA.acoes}
                 recomendacao={contingenciaIA.recomendacao}
               />
+            </div>
+
+            <div className="mt-6">
+              <IndiceExecutivoCard
+                score={indiceExecutivoIA.score}
+                nivel={indiceExecutivoIA.nivel}
+                descricao={indiceExecutivoIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <RadarRegionalCard
+                filial={ranking?.filial ?? "FILIAL OPERACIONAL"}
+                status={radarRegionalIA.status}
+                scorePressao={radarRegionalIA.scorePressao}
+                mensagem={radarRegionalIA.mensagem}
+              />
+            </div>
+
+            <div className="mt-6">
+              <SaudeCorporativaCard
+                score={saudeCorporativaIA.score}
+                status={saudeCorporativaIA.status}
+                descricao={saudeCorporativaIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <HeatmapInteligenteCard unidades={heatmapInteligenteIA} />
             </div>
 
             <div className="mt-6">
