@@ -43,6 +43,12 @@ import { calcularSaudeOperacionalCorporativa } from "@/lib/operacional/saude-ope
 import { SaudeCorporativaCard } from "@/components/operational/saude-corporativa-card"
 import { gerarUnidadeHeatmapInteligente } from "@/lib/operacional/heatmap-inteligente"
 import { HeatmapInteligenteCard } from "@/components/operational/heatmap-inteligente-card"
+import { calcularSaturacaoOperacional } from "@/lib/operacional/saturacao-operacional"
+import { SaturacaoOperacionalCard } from "@/components/operational/saturacao-operacional-card"
+import { calcularPrevisaoColapsoOperacional } from "@/lib/operacional/previsao-colapso-operacional"
+import { PrevisaoColapsoCard } from "@/components/operational/previsao-colapso-card"
+import { calcularRecuperacaoOperacional } from "@/lib/operacional/recuperacao-operacional"
+import { RecuperacaoOperacionalCard } from "@/components/operational/recuperacao-operacional-card"
 
 import {
   buscarPainelExecutivo,
@@ -286,6 +292,30 @@ export default function CoberturasPage() {
       sla: 96,
     }),
   ]
+
+  const saturacaoOperacionalIA = calcularSaturacaoOperacional({
+    coberturaAtiva: vagasAbertas,
+    colaboradoresDisponiveis: filaConvocacao.length,
+    recusas: recusasOperacionais,
+    reincidencias,
+    risco: riscoTempoReal.score,
+  })
+
+  const previsaoColapsoIA = calcularPrevisaoColapsoOperacional({
+    risco: riscoTempoReal.score,
+    saturacao: saturacaoOperacionalIA.score,
+    sla: slaOperacional,
+    recusas: recusasOperacionais,
+    reincidencias,
+  })
+
+  const recuperacaoOperacionalIA = calcularRecuperacaoOperacional({
+    sla: slaOperacional,
+    risco: riscoTempoReal.score,
+    saturacao: saturacaoOperacionalIA.score,
+    contingencias: contingenciaIA.acoes.length,
+    estabilidade: confiabilidadeIA.score,
+  })
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -651,6 +681,30 @@ export default function CoberturasPage() {
 
             <div className="mt-6">
               <HeatmapInteligenteCard unidades={heatmapInteligenteIA} />
+            </div>
+
+            <div className="mt-6">
+              <SaturacaoOperacionalCard
+                score={saturacaoOperacionalIA.score}
+                status={saturacaoOperacionalIA.status}
+                descricao={saturacaoOperacionalIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <PrevisaoColapsoCard
+                score={previsaoColapsoIA.score}
+                status={previsaoColapsoIA.status}
+                descricao={previsaoColapsoIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <RecuperacaoOperacionalCard
+                score={recuperacaoOperacionalIA.score}
+                status={recuperacaoOperacionalIA.status}
+                descricao={recuperacaoOperacionalIA.descricao}
+              />
             </div>
 
             <div className="mt-6">
