@@ -49,6 +49,12 @@ import { calcularPrevisaoColapsoOperacional } from "@/lib/operacional/previsao-c
 import { PrevisaoColapsoCard } from "@/components/operational/previsao-colapso-card"
 import { calcularRecuperacaoOperacional } from "@/lib/operacional/recuperacao-operacional"
 import { RecuperacaoOperacionalCard } from "@/components/operational/recuperacao-operacional-card"
+import { calcularEstabilidadeOperacional } from "@/lib/operacional/estabilidade-operacional"
+import { EstabilidadeOperacionalCard } from "@/components/operational/estabilidade-operacional-card"
+import { calcularEficienciaOperacional } from "@/lib/operacional/eficiencia-operacional"
+import { EficienciaOperacionalCard } from "@/components/operational/eficiencia-operacional-card"
+import { calcularProdutividadeOperacional } from "@/lib/operacional/produtividade-operacional"
+import { ProdutividadeOperacionalCard } from "@/components/operational/produtividade-operacional-card"
 
 import {
   buscarPainelExecutivo,
@@ -315,6 +321,32 @@ export default function CoberturasPage() {
     saturacao: saturacaoOperacionalIA.score,
     contingencias: contingenciaIA.acoes.length,
     estabilidade: confiabilidadeIA.score,
+  })
+
+  const estabilidadeOperacionalIA = calcularEstabilidadeOperacional({
+    sla: slaOperacional,
+    risco: riscoTempoReal.score,
+    saturacao: saturacaoOperacionalIA.score,
+    recuperacao: recuperacaoOperacionalIA.score,
+    estabilidadeHistorica: confiabilidadeIA.score,
+  })
+
+  const eficienciaOperacionalIA = calcularEficienciaOperacional({
+    sla: slaOperacional,
+    estabilidade: estabilidadeOperacionalIA.score,
+    recuperacao: recuperacaoOperacionalIA.score,
+    risco: riscoTempoReal.score,
+    recusas: recusasOperacionais,
+  })
+
+  const produtividadeOperacionalIA = calcularProdutividadeOperacional({
+    sla: slaOperacional,
+    eficiencia: eficienciaOperacionalIA.score,
+    estabilidade: estabilidadeOperacionalIA.score,
+    risco: riscoTempoReal.score,
+    cobertura: Number(
+      String(analyticsExecutivos.taxaCobertura).replace("%", "")
+    ),
   })
 
   return (
@@ -704,6 +736,30 @@ export default function CoberturasPage() {
                 score={recuperacaoOperacionalIA.score}
                 status={recuperacaoOperacionalIA.status}
                 descricao={recuperacaoOperacionalIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <EstabilidadeOperacionalCard
+                score={estabilidadeOperacionalIA.score}
+                status={estabilidadeOperacionalIA.status}
+                descricao={estabilidadeOperacionalIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <EficienciaOperacionalCard
+                score={eficienciaOperacionalIA.score}
+                status={eficienciaOperacionalIA.status}
+                descricao={eficienciaOperacionalIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <ProdutividadeOperacionalCard
+                score={produtividadeOperacionalIA.score}
+                status={produtividadeOperacionalIA.status}
+                descricao={produtividadeOperacionalIA.descricao}
               />
             </div>
 
