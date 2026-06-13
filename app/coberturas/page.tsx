@@ -55,6 +55,8 @@ import { calcularEficienciaOperacional } from "@/lib/operacional/eficiencia-oper
 import { EficienciaOperacionalCard } from "@/components/operational/eficiencia-operacional-card"
 import { calcularProdutividadeOperacional } from "@/lib/operacional/produtividade-operacional"
 import { ProdutividadeOperacionalCard } from "@/components/operational/produtividade-operacional-card"
+import { calcularCapacidadeOperacional } from "@/lib/operacional/capacidade-operacional"
+import { CapacidadeOperacionalCard } from "@/components/operational/capacidade-operacional-card"
 
 import {
   buscarPainelExecutivo,
@@ -347,6 +349,14 @@ export default function CoberturasPage() {
     cobertura: Number(
       String(analyticsExecutivos.taxaCobertura).replace("%", "")
     ),
+  })
+
+  const capacidadeOperacionalIA = calcularCapacidadeOperacional({
+    produtividade: produtividadeOperacionalIA.score,
+    estabilidade: estabilidadeOperacionalIA.score,
+    eficiencia: eficienciaOperacionalIA.score,
+    saturacao: saturacaoOperacionalIA.score,
+    risco: riscoTempoReal.score,
   })
 
   return (
@@ -760,6 +770,14 @@ export default function CoberturasPage() {
                 score={produtividadeOperacionalIA.score}
                 status={produtividadeOperacionalIA.status}
                 descricao={produtividadeOperacionalIA.descricao}
+              />
+            </div>
+
+            <div className="mt-6">
+              <CapacidadeOperacionalCard
+                score={capacidadeOperacionalIA.score}
+                status={capacidadeOperacionalIA.status}
+                descricao={capacidadeOperacionalIA.descricao}
               />
             </div>
 
