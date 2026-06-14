@@ -49,15 +49,15 @@ export function IndiceExecutivoCard({
 
   return (
     <div
-      className={`rounded-2xl border bg-[#071224] p-6 ${estilo.glow}`}
+      className={`rounded-2xl border bg-[#071224] p-4 ${estilo.glow}`}
     >
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between">
         <div>
-          <h3 className="text-2xl font-bold">
+          <h3 className="text-xl font-bold">
             Índice Executivo Operacional IA
           </h3>
 
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-xs text-slate-400">
             Consolidação executiva da operação
           </p>
         </div>
@@ -69,13 +69,13 @@ export function IndiceExecutivoCard({
         </span>
       </div>
 
-      <div className="mb-5">
+      <div className="mb-3">
         <div className="mb-2 flex justify-between text-xs text-slate-500">
           <span>Operação crítica</span>
           <span>Alta estabilidade</span>
         </div>
 
-        <div className="h-5 overflow-hidden rounded-full bg-slate-800">
+        <div className="h-3 overflow-hidden rounded-full bg-slate-800">
           <div
             className={`h-full ${estilo.barra}`}
             style={{
@@ -84,17 +84,17 @@ export function IndiceExecutivoCard({
           />
         </div>
 
-        <p className="mt-4 text-6xl font-black text-white">
+        <p className="mt-3 text-5xl font-black text-white">
           {score}
         </p>
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-[#020817] p-5">
+      <div className="rounded-xl border border-slate-800 bg-[#020817] p-4">
         <p className="text-xs font-bold tracking-wide text-slate-400">
           LEITURA EXECUTIVA
         </p>
 
-        <p className="mt-3 text-sm text-slate-200">
+        <p className="mt-2 text-xs text-slate-200">
           {descricao}
         </p>
       </div>

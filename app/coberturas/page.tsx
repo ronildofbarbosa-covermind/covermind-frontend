@@ -626,160 +626,162 @@ export default function CoberturasPage() {
               </section>
             </div>
 
-            <div className="mt-6">
-              <DecisaoIACard
-                titulo={decisaoIA.titulo}
-                descricao={decisaoIA.descricao}
-                nivel={decisaoIA.nivel}
-                recomendacao={decisaoIA.recomendacao}
-                impacto={decisaoIA.impacto}
-              />
-            </div>
+            <section className="mt-8">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold">
+                  Cockpit Cognitivo IA
+                </h2>
 
-            <div className="mt-6">
-              <IAPreditivaCard
-                score={analisePreditiva.score}
-                nivel={analisePreditiva.nivel}
-                riscoSLA={analisePreditiva.riscoSLA}
-                riscoAbandono={analisePreditiva.riscoAbandono}
-                riscoReincidencia={analisePreditiva.riscoReincidencia}
-                mensagem={analisePreditiva.mensagem}
-              />
-            </div>
+                <p className="mt-2 text-sm text-slate-400">
+                  Leitura executiva consolidada das inteligências operacionais.
+                </p>
+              </div>
 
-            <div className="mt-6">
-              <TendenciaIACard
-                tendencia={tendenciaIA.tendencia}
-                mensagem={tendenciaIA.mensagem}
-                variacao={tendenciaIA.variacao}
-              />
-            </div>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <DecisaoIACard
+                  titulo={decisaoIA.titulo}
+                  descricao={decisaoIA.descricao}
+                  nivel={decisaoIA.nivel}
+                  recomendacao={decisaoIA.recomendacao}
+                  impacto={decisaoIA.impacto}
+                />
 
-            <div className="mt-6">
-              <ExplicacaoIACard
-                titulo={explicacaoIA.titulo}
-                motivos={explicacaoIA.motivos}
-                impactoEsperado={explicacaoIA.impactoEsperado}
-              />
-            </div>
+                <IAPreditivaCard
+                  score={analisePreditiva.score}
+                  nivel={analisePreditiva.nivel}
+                  riscoSLA={analisePreditiva.riscoSLA}
+                  riscoAbandono={analisePreditiva.riscoAbandono}
+                  riscoReincidencia={analisePreditiva.riscoReincidencia}
+                  mensagem={analisePreditiva.mensagem}
+                />
 
-            <div className="mt-6">
-              <ConfiabilidadeIACard
-                score={confiabilidadeIA.score}
-                nivel={confiabilidadeIA.nivel}
-                mensagem={confiabilidadeIA.mensagem}
-              />
-            </div>
+                <TendenciaIACard
+                  tendencia={tendenciaIA.tendencia}
+                  mensagem={tendenciaIA.mensagem}
+                  variacao={tendenciaIA.variacao}
+                />
 
-            <div className="mt-6">
-              <MemoriaOperacionalCard
-                nivel={memoriaOperacionalIA.nivel}
-                memoria={memoriaOperacionalIA.memoria}
-                recomendacao={memoriaOperacionalIA.recomendacao}
-              />
-            </div>
+                <ExplicacaoIACard
+                  titulo={explicacaoIA.titulo}
+                  motivos={explicacaoIA.motivos}
+                  impactoEsperado={explicacaoIA.impactoEsperado}
+                />
 
-            <div className="mt-6">
-              <RiscoTempoRealCard
-                nivel={riscoTempoReal.nivel}
-                score={riscoTempoReal.score}
-                descricao={riscoTempoReal.descricao}
-                recomendacao={riscoTempoReal.recomendacao}
-              />
-            </div>
+                <ConfiabilidadeIACard
+                  score={confiabilidadeIA.score}
+                  nivel={confiabilidadeIA.nivel}
+                  mensagem={confiabilidadeIA.mensagem}
+                />
 
-            <div className="mt-6">
-              <ContingenciaAdaptativaCard
-                severidade={contingenciaIA.severidade}
-                acoes={contingenciaIA.acoes}
-                recomendacao={contingenciaIA.recomendacao}
-              />
-            </div>
+                <MemoriaOperacionalCard
+                  nivel={memoriaOperacionalIA.nivel}
+                  memoria={memoriaOperacionalIA.memoria}
+                  recomendacao={memoriaOperacionalIA.recomendacao}
+                />
+              </div>
+            </section>
 
-            <div className="mt-6">
-              <IndiceExecutivoCard
-                score={indiceExecutivoIA.score}
-                nivel={indiceExecutivoIA.nivel}
-                descricao={indiceExecutivoIA.descricao}
-              />
-            </div>
+            <section className="mt-8">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold">
+                  Observabilidade Operacional Enterprise
+                </h2>
 
-            <div className="mt-6">
-              <RadarRegionalCard
-                filial={ranking?.filial ?? "FILIAL OPERACIONAL"}
-                status={radarRegionalIA.status}
-                scorePressao={radarRegionalIA.scorePressao}
-                mensagem={radarRegionalIA.mensagem}
-              />
-            </div>
+                <p className="mt-2 text-sm text-slate-400">
+                  Risco, contingência, saúde, capacidade e performance operacional.
+                </p>
+              </div>
 
-            <div className="mt-6">
-              <SaudeCorporativaCard
-                score={saudeCorporativaIA.score}
-                status={saudeCorporativaIA.status}
-                descricao={saudeCorporativaIA.descricao}
-              />
-            </div>
+              <div className="grid gap-6 lg:grid-cols-3">
+                <RiscoTempoRealCard
+                  nivel={riscoTempoReal.nivel}
+                  score={riscoTempoReal.score}
+                  descricao={riscoTempoReal.descricao}
+                  recomendacao={riscoTempoReal.recomendacao}
+                />
 
-            <div className="mt-6">
+                <ContingenciaAdaptativaCard
+                  severidade={contingenciaIA.severidade}
+                  acoes={contingenciaIA.acoes}
+                  recomendacao={contingenciaIA.recomendacao}
+                />
+
+                <IndiceExecutivoCard
+                  score={indiceExecutivoIA.score}
+                  nivel={indiceExecutivoIA.nivel}
+                  descricao={indiceExecutivoIA.descricao}
+                />
+
+                <RadarRegionalCard
+                  filial={ranking?.filial ?? "FILIAL OPERACIONAL"}
+                  status={radarRegionalIA.status}
+                  scorePressao={radarRegionalIA.scorePressao}
+                  mensagem={radarRegionalIA.mensagem}
+                />
+
+                <SaudeCorporativaCard
+                  score={saudeCorporativaIA.score}
+                  status={saudeCorporativaIA.status}
+                  descricao={saudeCorporativaIA.descricao}
+                />
+
+                <SaturacaoOperacionalCard
+                  score={saturacaoOperacionalIA.score}
+                  status={saturacaoOperacionalIA.status}
+                  descricao={saturacaoOperacionalIA.descricao}
+                />
+
+                <PrevisaoColapsoCard
+                  score={previsaoColapsoIA.score}
+                  status={previsaoColapsoIA.status}
+                  descricao={previsaoColapsoIA.descricao}
+                />
+
+                <RecuperacaoOperacionalCard
+                  score={recuperacaoOperacionalIA.score}
+                  status={recuperacaoOperacionalIA.status}
+                  descricao={recuperacaoOperacionalIA.descricao}
+                />
+
+                <EstabilidadeOperacionalCard
+                  score={estabilidadeOperacionalIA.score}
+                  status={estabilidadeOperacionalIA.status}
+                  descricao={estabilidadeOperacionalIA.descricao}
+                />
+
+                <EficienciaOperacionalCard
+                  score={eficienciaOperacionalIA.score}
+                  status={eficienciaOperacionalIA.status}
+                  descricao={eficienciaOperacionalIA.descricao}
+                />
+
+                <ProdutividadeOperacionalCard
+                  score={produtividadeOperacionalIA.score}
+                  status={produtividadeOperacionalIA.status}
+                  descricao={produtividadeOperacionalIA.descricao}
+                />
+
+                <CapacidadeOperacionalCard
+                  score={capacidadeOperacionalIA.score}
+                  status={capacidadeOperacionalIA.status}
+                  descricao={capacidadeOperacionalIA.descricao}
+                />
+              </div>
+            </section>
+
+            <section className="mt-8">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold">
+                  Inteligência Territorial IA
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-400">
+                  Leitura cognitiva de pressão operacional por filial.
+                </p>
+              </div>
+
               <HeatmapInteligenteCard unidades={heatmapInteligenteIA} />
-            </div>
-
-            <div className="mt-6">
-              <SaturacaoOperacionalCard
-                score={saturacaoOperacionalIA.score}
-                status={saturacaoOperacionalIA.status}
-                descricao={saturacaoOperacionalIA.descricao}
-              />
-            </div>
-
-            <div className="mt-6">
-              <PrevisaoColapsoCard
-                score={previsaoColapsoIA.score}
-                status={previsaoColapsoIA.status}
-                descricao={previsaoColapsoIA.descricao}
-              />
-            </div>
-
-            <div className="mt-6">
-              <RecuperacaoOperacionalCard
-                score={recuperacaoOperacionalIA.score}
-                status={recuperacaoOperacionalIA.status}
-                descricao={recuperacaoOperacionalIA.descricao}
-              />
-            </div>
-
-            <div className="mt-6">
-              <EstabilidadeOperacionalCard
-                score={estabilidadeOperacionalIA.score}
-                status={estabilidadeOperacionalIA.status}
-                descricao={estabilidadeOperacionalIA.descricao}
-              />
-            </div>
-
-            <div className="mt-6">
-              <EficienciaOperacionalCard
-                score={eficienciaOperacionalIA.score}
-                status={eficienciaOperacionalIA.status}
-                descricao={eficienciaOperacionalIA.descricao}
-              />
-            </div>
-
-            <div className="mt-6">
-              <ProdutividadeOperacionalCard
-                score={produtividadeOperacionalIA.score}
-                status={produtividadeOperacionalIA.status}
-                descricao={produtividadeOperacionalIA.descricao}
-              />
-            </div>
-
-            <div className="mt-6">
-              <CapacidadeOperacionalCard
-                score={capacidadeOperacionalIA.score}
-                status={capacidadeOperacionalIA.status}
-                descricao={capacidadeOperacionalIA.descricao}
-              />
-            </div>
+            </section>
 
             <div className="mt-6">
               <HeatmapOperacional

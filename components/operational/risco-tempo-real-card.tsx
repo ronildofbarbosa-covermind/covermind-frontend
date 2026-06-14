@@ -38,15 +38,15 @@ export function RiscoTempoRealCard({
 
   return (
     <div
-      className={`rounded-2xl border bg-[#071224] p-6 ${estilo.glow}`}
+      className={`rounded-2xl border bg-[#071224] p-4 ${estilo.glow}`}
     >
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between">
         <div>
           <h3 className="text-xl font-bold">
             Risco Operacional Tempo Real
           </h3>
 
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-xs text-slate-400">
             Severidade operacional dinâmica
           </p>
         </div>
@@ -58,13 +58,13 @@ export function RiscoTempoRealCard({
         </span>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <div className="mb-2 flex justify-between text-xs text-slate-500">
           <span>Baixo risco</span>
           <span>Alto risco</span>
         </div>
 
-        <div className="h-5 overflow-hidden rounded-full bg-slate-800">
+        <div className="h-3 overflow-hidden rounded-full bg-slate-800">
           <div
             className={`h-full ${estilo.barra} transition-all duration-500`}
             style={{
@@ -93,7 +93,7 @@ export function RiscoTempoRealCard({
           RECOMENDAÇÃO IMEDIATA
         </p>
 
-        <p className="mt-2 text-sm text-slate-200">
+        <p className="mt-2 text-xs text-slate-200">
           {recomendacao}
         </p>
       </div>
