@@ -368,7 +368,7 @@ export default function CoberturasPage() {
 
         <section className="flex-1 p-8">
           <div className="mx-auto max-w-7xl">
-            <div className="mb-8 flex items-center justify-between">
+            <div className="mb-8 flex items-start justify-between gap-8">
               <div>
                 <span className="rounded-full bg-blue-600 px-3 py-1 text-xs text-white">
                   Operação em Tempo Real
@@ -389,25 +389,119 @@ export default function CoberturasPage() {
                 )}
               </div>
 
-              <div className="w-[260px] rounded-3xl border border-slate-800 bg-[#0f172a] p-5">
-                <p className="text-sm text-slate-400">Backend FastAPI</p>
+              <div className="min-w-[520px] rounded-3xl border border-slate-800 bg-[#0f172a] px-6 py-4">
+                <div className="flex items-center justify-between gap-8">
+                  <div>
+                    <p className="text-sm text-slate-400">Backend FastAPI</p>
 
-                <h2 className="mt-2 text-2xl font-bold text-emerald-400">
-                  {painel ? "ONLINE" : "OFFLINE"}
-                </h2>
+                    <h2 className="mt-1 text-2xl font-bold text-emerald-400">
+                      {painel ? "ONLINE" : "OFFLINE"}
+                    </h2>
 
-                <p className="mt-2 text-sm text-slate-500">
-                  Dados operacionais reais
+                    <p className="mt-1 text-sm text-slate-500">
+                      Dados operacionais reais
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-xs text-slate-400">
+                      {carregandoFila
+                        ? "Sincronizando..."
+                        : erroFila
+                          ? "Falha na sincronização"
+                          : ultimaAtualizacao
+                            ? `Atualizado às ${ultimaAtualizacao.toLocaleTimeString("pt-BR")}`
+                            : "Aguardando sincronização"}
+                    </p>
+
+                    <div className="mt-2 inline-flex h-3 w-3 rounded-full bg-emerald-400" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-300">
+                  Status Global
                 </p>
 
-                <p className="mt-3 text-xs text-slate-400">
-                  {carregandoFila
-                    ? "Sincronizando..."
-                    : erroFila
-                      ? "Falha na sincronização"
-                      : ultimaAtualizacao
-                        ? `Atualizado às ${ultimaAtualizacao.toLocaleTimeString("pt-BR")}`
-                        : "Aguardando sincronização"}
+                <p className="mt-2 text-2xl font-bold text-amber-200">
+                  ALERTA
+                </p>
+
+                <p className="mt-1 text-xs text-amber-100/70">
+                  Operação monitorada em tempo real
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">
+                  Pressão Operacional
+                </p>
+
+                <p className="mt-2 text-2xl font-bold text-cyan-200">
+                  MODERADA
+                </p>
+
+                <p className="mt-1 text-xs text-cyan-100/70">
+                  Oscilações operacionais controladas
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-rose-300">
+                  Risco SLA
+                </p>
+
+                <p className="mt-2 text-2xl font-bold text-rose-200">
+                  36%
+                </p>
+
+                <p className="mt-1 text-xs text-rose-100/70">
+                  Risco operacional monitorado
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                  Filiais Monitoradas
+                </p>
+
+                <p className="mt-2 text-2xl font-bold text-emerald-200">
+                  12
+                </p>
+
+                <p className="mt-1 text-xs text-emerald-100/70">
+                  Inteligência territorial ativa
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-violet-500/30 bg-violet-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-violet-300">
+                  IA Engines Ativas
+                </p>
+
+                <p className="mt-2 text-2xl font-bold text-violet-200">
+                  18
+                </p>
+
+                <p className="mt-1 text-xs text-violet-100/70">
+                  Motores cognitivos em execução
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-orange-300">
+                  Coberturas Ativas
+                </p>
+
+                <p className="mt-2 text-2xl font-bold text-orange-200">
+                  7
+                </p>
+
+                <p className="mt-1 text-xs text-orange-100/70">
+                  Execuções simultâneas monitoradas
                 </p>
               </div>
             </div>
@@ -489,20 +583,19 @@ export default function CoberturasPage() {
                 />
               </div>
 
-              <div className="mb-8">
+              
+              <div className="mb-8 grid gap-6 lg:grid-cols-4">
                 <TendenciaOperacionalCard
                   percentual={analyticsExecutivos.tendenciaOperacional}
                 />
-              </div>
-
-              <div className="mb-8 grid gap-6 lg:grid-cols-3">
+              
                 <FilialAnalyticsCard
                   titulo="Filial Mais Crítica"
                   filial={analyticsExecutivos.filialMaisCritica}
                   status="CRITICO"
                   descricao="Maior pressão operacional identificada"
                 />
-
+              
                 <FilialAnalyticsCard
                   titulo="Filial Mais Estável"
                   filial={analyticsExecutivos.filialMaisEstavel}
@@ -563,7 +656,19 @@ export default function CoberturasPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
+            <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold">
+                  Operação Ativa em Tempo Real
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-400">
+                  Gestão operacional ativa da vaga, fila inteligente e ranking cognitivo.
+                </p>
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-2">
+
               <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
                 <h2 className="mb-6 text-2xl font-bold">
                   Vaga Operacional Selecionada
@@ -625,8 +730,9 @@ export default function CoberturasPage() {
                 />
               </section>
             </div>
+          </section>
 
-            <section className="mt-8">
+            <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold">
                   Cockpit Cognitivo IA
@@ -681,7 +787,7 @@ export default function CoberturasPage() {
               </div>
             </section>
 
-            <section className="mt-8">
+            <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold">
                   Observabilidade Operacional Enterprise
@@ -769,8 +875,8 @@ export default function CoberturasPage() {
               </div>
             </section>
 
-            <section className="mt-8">
-              <div className="mb-4">
+            <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
+              <div className="mb-6">
                 <h2 className="text-2xl font-bold">
                   Inteligência Territorial IA
                 </h2>
@@ -780,18 +886,18 @@ export default function CoberturasPage() {
                 </p>
               </div>
 
-              <HeatmapInteligenteCard unidades={heatmapInteligenteIA} />
+              <div className="grid gap-6 lg:grid-cols-2">
+                <HeatmapInteligenteCard unidades={heatmapInteligenteIA} />
+
+                <div className="space-y-6">
+                  <HeatmapOperacional
+                    unidades={heatmapOperacional}
+                  />
+
+                  <TimelineOperacional eventos={eventos} />
+                </div>
+              </div>
             </section>
-
-            <div className="mt-6">
-              <HeatmapOperacional
-                unidades={heatmapOperacional}
-              />
-            </div>
-
-            <div className="mt-6">
-              <TimelineOperacional eventos={eventos} />
-            </div>
           </div>
         </section>
       </div>
