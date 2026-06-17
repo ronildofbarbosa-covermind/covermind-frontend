@@ -90,6 +90,9 @@ export default function CoberturasPage() {
   const [ranking, setRanking] = useState<RankingVaga | null>(null)
   const [carregandoPainel, setCarregandoPainel] = useState(true)
   const [erroPainel, setErroPainel] = useState<string | null>(null)
+  const [abaAtiva, setAbaAtiva] = useState<
+    "overview" | "operacao" | "cognitivo" | "observabilidade" | "territorial"
+  >("overview")
 
   const {
     fila: filaConvocacao,
@@ -506,6 +509,40 @@ export default function CoberturasPage() {
               </div>
             </div>
 
+            <div className="mb-8 flex flex-wrap gap-2 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-2">
+              {[
+                { id: "overview", label: "Executive Overview" },
+                { id: "operacao", label: "Operação Ativa" },
+                { id: "cognitivo", label: "Cockpit Cognitivo IA" },
+                { id: "observabilidade", label: "Observabilidade" },
+                { id: "territorial", label: "Territorial IA" },
+              ].map((aba) => (
+                <button
+                  key={aba.id}
+                  type="button"
+                  onClick={() =>
+                    setAbaAtiva(
+                      aba.id as
+                        | "overview"
+                        | "operacao"
+                        | "cognitivo"
+                        | "observabilidade"
+                        | "territorial"
+                    )
+                  }
+                  className={`rounded-xl px-5 py-3 text-sm font-semibold transition ${
+                    abaAtiva === aba.id
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  }`}
+                >
+                  {aba.label}
+                </button>
+              ))}
+            </div>
+
+            {abaAtiva === "overview" && (
+              <>
             <div className="mb-8 grid grid-cols-4 gap-6">
               <KPICard
                 titulo="Vagas/Riscos Ativos"
@@ -656,6 +693,11 @@ export default function CoberturasPage() {
               />
             </div>
 
+              </>
+            )}
+
+            {abaAtiva === "operacao" && (
+              <>
             <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">
@@ -732,6 +774,11 @@ export default function CoberturasPage() {
             </div>
           </section>
 
+              </>
+            )}
+
+            {abaAtiva === "cognitivo" && (
+              <>
             <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold">
@@ -787,6 +834,11 @@ export default function CoberturasPage() {
               </div>
             </section>
 
+              </>
+            )}
+
+            {abaAtiva === "observabilidade" && (
+              <>
             <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold">
@@ -875,6 +927,11 @@ export default function CoberturasPage() {
               </div>
             </section>
 
+              </>
+            )}
+
+            {abaAtiva === "territorial" && (
+              <>
             <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">
@@ -898,6 +955,9 @@ export default function CoberturasPage() {
                 </div>
               </div>
             </section>
+              </>
+            )}
+
           </div>
         </section>
       </div>
