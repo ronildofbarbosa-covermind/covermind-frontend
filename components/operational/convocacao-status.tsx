@@ -1,5 +1,11 @@
 type Props = {
-  status: "disponivel" | "convocado" | "aceito" | "recusado" | "timeout"
+  status:
+    | "disponivel"
+    | "convocado"
+    | "aceito"
+    | "recusado"
+    | "timeout"
+    | "cancelado"
 }
 
 const styles = {
@@ -8,6 +14,7 @@ const styles = {
   aceito: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
   recusado: "bg-red-500/20 text-red-300 border-red-500/30",
   timeout: "bg-zinc-500/20 text-zinc-300 border-zinc-500/30",
+  cancelado: "bg-slate-500/20 text-slate-300 border-slate-500/30",
 }
 
 const labels = {
@@ -16,6 +23,7 @@ const labels = {
   aceito: "Aceito",
   recusado: "Recusado",
   timeout: "Timeout",
+  cancelado: "Cancelado",
 }
 
 export function ConvocacaoStatus({ status }: Props) {

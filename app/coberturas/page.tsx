@@ -21,6 +21,11 @@ import { StatusOperacionalCard } from "@/components/operational/status-operacion
 import { TendenciaIACard } from "@/components/operational/tendencia-ia-card"
 import { TimelineOperacional } from "@/components/operational/timeline-operacional"
 import { ToastOperacional } from "@/components/operational/toast-operacional"
+import { FiltrosOperacionaisGlobais } from "@/components/operational/filtros-operacionais-globais"
+import {
+  OcorrenciasOperacionaisLista,
+  type OcorrenciaOperacional,
+} from "@/components/operational/ocorrencias-operacionais-lista"
 import { Top5Ranking } from "@/components/ranking/top5-ranking"
 import { useFilaOperacional } from "@/hooks/use-fila-operacional"
 import { useRealtimeOperacional } from "@/hooks/use-realtime-operacional"
@@ -83,6 +88,20 @@ type RankingVaga = {
   total_elegiveis?: number | null
 }
 
+type RankingItemNormalizado = {
+  id: number
+  colaborador_id: string
+  nome?: string
+  cargo?: string
+  score?: number
+  score_ranking?: number
+  distancia_km?: number
+  status?: undefined
+  status_convocacao?: string
+  timeout_segundos?: number
+  ordem_convocacao?: number
+}
+
 export default function CoberturasPage() {
   const vagaOperacionalId = "VAGA-002"
 
@@ -93,6 +112,14 @@ export default function CoberturasPage() {
   const [abaAtiva, setAbaAtiva] = useState<
     "overview" | "operacao" | "cognitivo" | "observabilidade" | "territorial"
   >("overview")
+
+  const [filialSelecionada, setFilialSelecionada] = useState("TODAS")
+  const [tipoServicoSelecionado, setTipoServicoSelecionado] = useState("TODOS")
+  const [dataInicio, setDataInicio] = useState("")
+  const [dataFim, setDataFim] = useState("")
+
+  const [ocorrenciaSelecionadaId, setOcorrenciaSelecionadaId] =
+    useState("OC-001")
 
   const {
     fila: filaConvocacao,
@@ -362,6 +389,84 @@ export default function CoberturasPage() {
     risco: riscoTempoReal.score,
   })
 
+  const top5Normalizado: RankingItemNormalizado[] = top5.map((item) => ({
+    id: item.id,
+    colaborador_id: item.colaborador_id,
+    nome: item.nome ?? undefined,
+    cargo: item.cargo ?? undefined,
+    score: item.score ?? undefined,
+    score_ranking: item.score_ranking ?? undefined,
+    distancia_km: item.distancia_km ?? undefined,
+    status: undefined,
+    status_convocacao: item.status_convocacao ?? undefined,
+    timeout_segundos: item.timeout_segundos ?? undefined,
+    ordem_convocacao: item.ordem_convocacao ?? undefined,
+  }))
+
+  const aplicarFiltros = () => {
+    console.log("Aplicando filtros operacionais globais", {
+      filialSelecionada,
+      tipoServicoSelecionado,
+      dataInicio,
+      dataFim,
+    })
+  }
+
+  const limparFiltros = () => {
+    setFilialSelecionada("TODAS")
+    setTipoServicoSelecionado("TODOS")
+    setDataInicio("")
+    setDataFim("")
+  }
+
+  const ocorrenciasOperacionais: OcorrenciaOperacional[] = [
+    {
+      id: "OC-001",
+      cliente: "Cliente Beta",
+      posto: "Recepção",
+      filial: "CURITIBA",
+      cargo: "Recepcionista",
+      tipoServico: "FACILITIES_ACESSOS",
+      status: "CRITICO",
+      sla: "1h15min",
+    },
+    {
+      id: "OC-002",
+      cliente: "Cliente Alfa",
+      posto: "Vigilância",
+      filial: "FLORIANÓPOLIS",
+      cargo: "Vigilante",
+      tipoServico: "SEGURANÇA_PATRIMONIAL",
+      status: "EM_CONVOCACAO",
+      sla: "42min",
+    },
+    {
+      id: "OC-003",
+      cliente: "Cliente Gama",
+      posto: "Portaria",
+      filial: "JOINVILLE",
+      cargo: "Porteiro",
+      tipoServico: "FACILITIES_ACESSOS",
+      status: "ALERTA",
+      sla: "2h05min",
+    },
+    {
+      id: "OC-004",
+      cliente: "Cliente Ômega",
+      posto: "Limpeza Técnica",
+      filial: "CURITIBA",
+      cargo: "Auxiliar de Limpeza",
+      tipoServico: "FACILITIES_SERVICOS",
+      status: "NORMAL",
+      sla: "3h20min",
+    },
+  ]
+
+  const ocorrenciaSelecionada =
+    ocorrenciasOperacionais.find(
+      (ocorrencia) => ocorrencia.id === ocorrenciaSelecionadaId
+    ) ?? ocorrenciasOperacionais[0]
+
   return (
     <main className="min-h-screen bg-[#020817] text-white">
       <ToastOperacional mensagem={mensagemOperacional} />
@@ -422,6 +527,20 @@ export default function CoberturasPage() {
                 </div>
               </div>
             </div>
+
+
+            <FiltrosOperacionaisGlobais
+              filialSelecionada={filialSelecionada}
+              tipoServicoSelecionado={tipoServicoSelecionado}
+              dataInicio={dataInicio}
+              dataFim={dataFim}
+              onFilialChange={setFilialSelecionada}
+              onTipoServicoChange={setTipoServicoSelecionado}
+              onDataInicioChange={setDataInicio}
+              onDataFimChange={setDataFim}
+              onAplicar={aplicarFiltros}
+              onLimpar={limparFiltros}
+            />
 
             <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
               <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
@@ -709,7 +828,12 @@ export default function CoberturasPage() {
                 </p>
               </div>
 
-              <div className="grid gap-8 lg:grid-cols-2">
+              <div className="grid gap-8 xl:grid-cols-[360px_1fr_1fr]">
+                <OcorrenciasOperacionaisLista
+                  ocorrencias={ocorrenciasOperacionais}
+                  ocorrenciaSelecionadaId={ocorrenciaSelecionadaId}
+                  onSelecionarOcorrencia={setOcorrenciaSelecionadaId}
+                />
 
               <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
                 <h2 className="mb-6 text-2xl font-bold">
@@ -720,26 +844,26 @@ export default function CoberturasPage() {
                   <div className="flex justify-between">
                     <div>
                       <h3 className="text-xl font-bold">
-                        {ranking
-                          ? `${ranking.cliente} · ${ranking.posto}`
+                        {ocorrenciaSelecionada
+                          ? `${ocorrenciaSelecionada.cliente} · ${ocorrenciaSelecionada.posto}`
                           : carregandoPainel
-                            ? "Carregando vaga operacional"
-                            : "Nenhuma vaga carregada"}
+                            ? "Carregando ocorrência operacional"
+                            : "Nenhuma ocorrência carregada"}
                       </h3>
 
                       <p className="mt-2 text-slate-400">
-                        {ranking?.grupo_servico ?? "Grupo não informado"}
+                        {ocorrenciaSelecionada?.tipoServico ?? ranking?.grupo_servico ?? "Grupo não informado"}
                       </p>
                     </div>
 
                     <span className="rounded-full bg-blue-600 px-3 py-1 text-xs">
-                      {vagaOperacionalId}
+                      {ocorrenciaSelecionada?.id ?? vagaOperacionalId}
                     </span>
                   </div>
 
                   <div className="mt-6 grid grid-cols-3 gap-4">
-                    <Info titulo="Filial" valor={ranking?.filial ?? "-"} />
-                    <Info titulo="Cargo" valor={ranking?.cargo ?? "-"} />
+                    <Info titulo="Filial" valor={ocorrenciaSelecionada?.filial ?? ranking?.filial ?? "-"} />
+                    <Info titulo="Cargo" valor={ocorrenciaSelecionada?.cargo ?? ranking?.cargo ?? "-"} />
                     <Info titulo="Elegíveis" valor={ranking?.total_elegiveis ?? 0} />
                   </div>
                 </div>
@@ -767,10 +891,11 @@ export default function CoberturasPage() {
                 </h2>
 
                 <Top5Ranking
-                  ranking={top5}
+                  ranking={top5Normalizado}
                   vagaId={vagaOperacionalId}
                 />
-              </section>
+
+                </section>
             </div>
           </section>
 
