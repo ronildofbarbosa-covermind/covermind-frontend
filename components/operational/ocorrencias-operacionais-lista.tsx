@@ -6,6 +6,24 @@ type StatusOcorrencia =
   | "ALERTA"
   | "NORMAL"
 
+type NivelImpacto =
+  | "BAIXO"
+  | "MEDIO"
+  | "ALTO"
+  | "CRITICO"
+
+type RiscoContratual =
+  | "NENHUM"
+  | "BAIXO"
+  | "MEDIO"
+  | "ALTO"
+
+type CriticidadePosto =
+  | "BAIXA"
+  | "MEDIA"
+  | "ALTA"
+  | "CRITICA"
+
 type OcorrenciaOperacional = {
   id: string
   cliente: string
@@ -21,6 +39,11 @@ type OcorrenciaOperacional = {
   matriculaColaborador?: string
   nomeColaborador?: string
   cargoColaborador?: string
+  criticidadePosto?: CriticidadePosto
+  impactoCliente?: string
+  impactoSla?: string
+  riscoContratual?: RiscoContratual | string
+  nivelImpacto?: NivelImpacto
   elegiveis?: number
   filaAtiva?: number
   recusas?: number
@@ -47,6 +70,83 @@ function obterPesoStatus(status: StatusOcorrencia) {
   }
 }
 
+function obterPesoImpacto(nivelImpacto?: NivelImpacto) {
+  switch (nivelImpacto) {
+    case "CRITICO":
+      return 100
+    case "ALTO":
+      return 70
+    case "MEDIO":
+      return 40
+    case "BAIXO":
+    default:
+      return 10
+  }
+}
+
+function obterPesoRiscoContratual(riscoContratual?: RiscoContratual | string) {
+  switch (riscoContratual) {
+    case "ALTO":
+      return 80
+    case "MEDIO":
+      return 40
+    case "BAIXO":
+      return 10
+    case "NENHUM":
+    default:
+      return 0
+  }
+}
+
+function obterPesoCriticidadePosto(criticidadePosto?: CriticidadePosto) {
+  switch (criticidadePosto) {
+    case "CRITICA":
+      return 100
+    case "ALTA":
+      return 50
+    case "MEDIA":
+      return 20
+    case "BAIXA":
+    default:
+      return 0
+  }
+}
+
+function obterPesoElegiveis(elegiveis?: number) {
+  const total = elegiveis ?? 0
+
+  if (total === 0) return 100
+  if (total <= 3) return 60
+  if (total <= 6) return 30
+
+  return 0
+}
+
+function obterPesoFila(filaAtiva?: number) {
+  const total = filaAtiva ?? 0
+
+  if (total === 0) return 50
+  if (total <= 2) return 20
+
+  return 0
+}
+
+function obterPesoRecusas(recusas?: number) {
+  return Math.min((recusas ?? 0) * 5, 20)
+}
+
+function calcularScoreExecutivo(ocorrencia: OcorrenciaOperacional) {
+  return (
+    obterPesoStatus(ocorrencia.status) +
+    obterPesoImpacto(ocorrencia.nivelImpacto) +
+    obterPesoRiscoContratual(ocorrencia.riscoContratual) +
+    obterPesoCriticidadePosto(ocorrencia.criticidadePosto) +
+    obterPesoElegiveis(ocorrencia.elegiveis) +
+    obterPesoFila(ocorrencia.filaAtiva) +
+    obterPesoRecusas(ocorrencia.recusas)
+  )
+}
+
 function converterSlaParaMinutos(sla: string): number {
   if (!sla) return 9999
 
@@ -66,20 +166,15 @@ export function OcorrenciasOperacionaisLista({
   onSelecionarOcorrencia,
 }: Props) {
   const ocorrenciasOrdenadas = [...ocorrencias].sort((a, b) => {
-    const pesoA = obterPesoStatus(a.status)
-    const pesoB = obterPesoStatus(b.status)
+    const scoreA = calcularScoreExecutivo(a)
+    const scoreB = calcularScoreExecutivo(b)
 
-    if (pesoA !== pesoB) return pesoB - pesoA
+    if (scoreA !== scoreB) return scoreB - scoreA
 
     const slaA = converterSlaParaMinutos(a.sla)
     const slaB = converterSlaParaMinutos(b.sla)
 
-    if (slaA !== slaB) return slaA - slaB
-
-    const recusasA = a.recusas ?? 0
-    const recusasB = b.recusas ?? 0
-
-    return recusasB - recusasA
+    return slaA - slaB
   })
 
   const totalCriticos = ocorrencias.filter(
@@ -141,6 +236,12 @@ export function OcorrenciasOperacionaisLista({
             matriculaColaborador={ocorrencia.matriculaColaborador}
             nomeColaborador={ocorrencia.nomeColaborador}
             cargoColaborador={ocorrencia.cargoColaborador}
+            criticidadePosto={ocorrencia.criticidadePosto}
+            impactoCliente={ocorrencia.impactoCliente}
+            impactoSla={ocorrencia.impactoSla}
+            riscoContratual={ocorrencia.riscoContratual}
+            nivelImpacto={ocorrencia.nivelImpacto}
+            scoreExecutivo={calcularScoreExecutivo(ocorrencia)}
             elegiveis={ocorrencia.elegiveis}
             filaAtiva={ocorrencia.filaAtiva}
             recusas={ocorrencia.recusas}

@@ -10,6 +10,12 @@ type NivelImpacto =
   | "ALTO"
   | "CRITICO"
 
+type CriticidadePosto =
+  | "BAIXA"
+  | "MEDIA"
+  | "ALTA"
+  | "CRITICA"
+
 type Props = {
   id: string
   cliente: string
@@ -25,14 +31,16 @@ type Props = {
   matriculaColaborador?: string
   nomeColaborador?: string
   cargoColaborador?: string
-  elegiveis?: number
-  filaAtiva?: number
-  recusas?: number
-  topScore?: number
+  criticidadePosto?: CriticidadePosto
   impactoCliente?: string
   impactoSla?: string
   riscoContratual?: string
   nivelImpacto?: NivelImpacto
+  scoreExecutivo?: number
+  elegiveis?: number
+  filaAtiva?: number
+  recusas?: number
+  topScore?: number
   selecionada: boolean
   onSelecionar: () => void
 }
@@ -73,14 +81,16 @@ export function CardOcorrenciaOperacional({
   matriculaColaborador,
   nomeColaborador,
   cargoColaborador,
-  elegiveis = 0,
-  filaAtiva = 0,
-  recusas = 0,
-  topScore = 0,
+  criticidadePosto = "MEDIA",
   impactoCliente = "Não informado",
   impactoSla = "Não informado",
   riscoContratual = "Não informado",
   nivelImpacto = "BAIXO",
+  scoreExecutivo = 0,
+  elegiveis = 0,
+  filaAtiva = 0,
+  recusas = 0,
+  topScore = 0,
   selecionada,
   onSelecionar,
 }: Props) {
@@ -108,6 +118,18 @@ export function CardOcorrenciaOperacional({
         </span>
       </div>
 
+      <div className="mb-3 rounded-xl border border-blue-500/30 bg-blue-950/20 px-3 py-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-wide text-blue-300">
+            Score Executivo
+          </span>
+
+          <span className="text-xl font-bold text-blue-200">
+            {scoreExecutivo}
+          </span>
+        </div>
+      </div>
+
       <div>
         <p className="font-bold text-white">
           {cliente} · {posto}
@@ -133,6 +155,13 @@ export function CardOcorrenciaOperacional({
 
         <p className="mt-1 text-xs text-slate-400">
           {grupoOcorrencia}
+        </p>
+
+        <p className="mt-2 text-xs text-slate-400">
+          Criticidade do posto:
+          <span className="ml-1 font-semibold text-white">
+            {criticidadePosto}
+          </span>
         </p>
       </div>
 
@@ -233,4 +262,4 @@ function Info({
   )
 }
 
-export type { StatusOcorrencia, NivelImpacto }
+export type { StatusOcorrencia, NivelImpacto, CriticidadePosto }
