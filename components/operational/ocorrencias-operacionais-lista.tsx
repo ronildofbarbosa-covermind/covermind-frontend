@@ -24,6 +24,11 @@ type CriticidadePosto =
   | "ALTA"
   | "CRITICA"
 
+type ClassificacaoContrato =
+  | "PADRAO"
+  | "PREMIUM"
+  | "VIP"
+
 type OcorrenciaOperacional = {
   id: string
   cliente: string
@@ -44,6 +49,8 @@ type OcorrenciaOperacional = {
   impactoSla?: string
   riscoContratual?: RiscoContratual | string
   nivelImpacto?: NivelImpacto
+  iccContrato?: number
+  classificacaoContrato?: ClassificacaoContrato
   elegiveis?: number
   filaAtiva?: number
   recusas?: number
@@ -135,6 +142,22 @@ function obterPesoRecusas(recusas?: number) {
   return Math.min((recusas ?? 0) * 5, 20)
 }
 
+function obterPesoICC(
+  classificacaoContrato?: "PADRAO" | "PREMIUM" | "VIP"
+) {
+  switch (classificacaoContrato) {
+    case "VIP":
+      return 50
+
+    case "PREMIUM":
+      return 25
+
+    case "PADRAO":
+    default:
+      return 0
+  }
+}
+
 function calcularScoreExecutivo(ocorrencia: OcorrenciaOperacional) {
   return (
     obterPesoStatus(ocorrencia.status) +
@@ -143,7 +166,8 @@ function calcularScoreExecutivo(ocorrencia: OcorrenciaOperacional) {
     obterPesoCriticidadePosto(ocorrencia.criticidadePosto) +
     obterPesoElegiveis(ocorrencia.elegiveis) +
     obterPesoFila(ocorrencia.filaAtiva) +
-    obterPesoRecusas(ocorrencia.recusas)
+    obterPesoRecusas(ocorrencia.recusas) +
+    obterPesoICC(ocorrencia.classificacaoContrato)
   )
 }
 
@@ -242,6 +266,8 @@ export function OcorrenciasOperacionaisLista({
             riscoContratual={ocorrencia.riscoContratual}
             nivelImpacto={ocorrencia.nivelImpacto}
             scoreExecutivo={calcularScoreExecutivo(ocorrencia)}
+            iccContrato={ocorrencia.iccContrato}
+            classificacaoContrato={ocorrencia.classificacaoContrato}
             elegiveis={ocorrencia.elegiveis}
             filaAtiva={ocorrencia.filaAtiva}
             recusas={ocorrencia.recusas}
