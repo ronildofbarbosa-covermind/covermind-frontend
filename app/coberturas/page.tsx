@@ -429,6 +429,11 @@ export default function CoberturasPage() {
     tipoServico: "FACILITIES_ACESSOS",
     status: "CRITICO",
     sla: "1h15min",
+    horarioPosto: "07:00 às 19:00",
+    enderecoPosto: "Rua XV de Novembro, 1250",
+    bairroPosto: "Centro",
+    cidadePosto: "Curitiba",
+    estadoPosto: "PR",
     motivoOcorrencia: "Atestado Médico",
     grupoOcorrencia: "Ausência do Colaborador",
     possuiOcupanteVinculado: true,
@@ -456,6 +461,11 @@ export default function CoberturasPage() {
     tipoServico: "SEGURANÇA_PATRIMONIAL",
     status: "EM_CONVOCACAO",
     sla: "42min",
+    horarioPosto: "19:00 às 07:00",
+    enderecoPosto: "Av. Beira Mar Norte, 1000",
+    bairroPosto: "Centro",
+    cidadePosto: "Florianópolis",
+    estadoPosto: "SC",
     motivoOcorrencia: "Reciclagem",
     grupoOcorrencia: "Ausência do Colaborador",
     possuiOcupanteVinculado: true,
@@ -483,6 +493,11 @@ export default function CoberturasPage() {
     tipoServico: "FACILITIES_ACESSOS",
     status: "ALERTA",
     sla: "2h05min",
+    horarioPosto: "08:00 às 12:00 • 13:12 às 18:00",
+    enderecoPosto: "Rua Otto Boehm, 560",
+    bairroPosto: "América",
+    cidadePosto: "Joinville",
+    estadoPosto: "SC",
     motivoOcorrencia: "Falta de Efetivo",
     grupoOcorrencia: "Capacidade Operacional",
     possuiOcupanteVinculado: false,
@@ -507,6 +522,11 @@ export default function CoberturasPage() {
     tipoServico: "FACILITIES_SERVICOS",
     status: "NORMAL",
     sla: "3h20min",
+    horarioPosto: "08:00 às 17:48",
+    enderecoPosto: "Av. das Torres, 2450",
+    bairroPosto: "Jardim das Américas",
+    cidadePosto: "Curitiba",
+    estadoPosto: "PR",
     motivoOcorrencia: "Treinamento",
     grupoOcorrencia: "Desenvolvimento Operacional",
     possuiOcupanteVinculado: false,
@@ -522,7 +542,7 @@ export default function CoberturasPage() {
     recusas: 0,
     topScore: 87,
   },
-]
+]  
   
   const ocorrenciaSelecionada =
     ocorrenciasOperacionais.find(
@@ -879,88 +899,99 @@ export default function CoberturasPage() {
 
             {abaAtiva === "operacao" && (
               <>
-            <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold">
-                  Operação Ativa em Tempo Real
-                </h2>
+                <section className="mt-10 rounded-3xl border border-slate-800 bg-[#06101f]/80 p-6 backdrop-blur-sm">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold">
+                      Operação Ativa em Tempo Real
+                    </h2>
 
-                <p className="mt-2 text-sm text-slate-400">
-                  Gestão operacional ativa da vaga, fila inteligente e ranking cognitivo.
-                </p>
-              </div>
+                    <p className="mt-2 text-sm text-slate-400">
+                      Gestão operacional ativa das ocorrências, fila inteligente e ranking cognitivo.
+                    </p>
+                  </div>
 
-              <div className="grid gap-8 xl:grid-cols-[360px_1fr_1fr]">
-                <OcorrenciasOperacionaisLista
-                  ocorrencias={ocorrenciasOperacionais}
-                  ocorrenciaSelecionadaId={ocorrenciaSelecionadaId}
-                  onSelecionarOcorrencia={setOcorrenciaSelecionadaId}
-                />
+                  <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(420px,2fr)]">
+                    <OcorrenciasOperacionaisLista
+                      ocorrencias={ocorrenciasOperacionais}
+                      ocorrenciaSelecionadaId={ocorrenciaSelecionadaId}
+                      onSelecionarOcorrencia={setOcorrenciaSelecionadaId}
+                    />
 
-              <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
-                <h2 className="mb-6 text-2xl font-bold">
-                  Vaga Operacional Selecionada
-                </h2>
+                    <div className="space-y-8">
+                      <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
+                        <h2 className="mb-6 text-2xl font-bold">
+                          Vaga Operacional Selecionada
+                        </h2>
 
-                <div className="rounded-2xl border border-slate-800 bg-[#020817] p-5">
-                  <div className="flex justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold">
-                        {ocorrenciaSelecionada
-                          ? `${ocorrenciaSelecionada.cliente} · ${ocorrenciaSelecionada.posto}`
-                          : carregandoPainel
-                            ? "Carregando ocorrência operacional"
-                            : "Nenhuma ocorrência carregada"}
-                      </h3>
+                        <div className="rounded-2xl border border-slate-800 bg-[#020817] p-5">
+                          <div className="flex justify-between">
+                            <div>
+                              <h3 className="text-xl font-bold">
+                                {ocorrenciaSelecionada
+                                  ? `${ocorrenciaSelecionada.cliente} · ${ocorrenciaSelecionada.posto}`
+                                  : carregandoPainel
+                                    ? "Carregando ocorrência operacional"
+                                    : "Nenhuma ocorrência carregada"}
+                              </h3>
 
-                      <p className="mt-2 text-slate-400">
-                        {ocorrenciaSelecionada?.tipoServico ?? ranking?.grupo_servico ?? "Grupo não informado"}
-                      </p>
+                              <p className="mt-2 text-slate-400">
+                                {ocorrenciaSelecionada?.tipoServico ?? ranking?.grupo_servico ?? "Grupo não informado"}
+                              </p>
+                            </div>
+
+                            <span className="rounded-full bg-blue-600 px-3 py-1 text-xs">
+                              {ocorrenciaSelecionada?.id ?? vagaOperacionalId}
+                            </span>
+                          </div>
+
+                          <div className="mt-6 grid grid-cols-3 gap-4">
+                            <Info
+                              titulo="Filial"
+                              valor={ocorrenciaSelecionada?.filial ?? ranking?.filial ?? "-"}
+                            />
+
+                            <Info
+                              titulo="Cargo"
+                              valor={ocorrenciaSelecionada?.cargo ?? ranking?.cargo ?? "-"}
+                            />
+
+                            <Info
+                              titulo="Elegíveis"
+                              valor={ranking?.total_elegiveis ?? 0}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-8">
+                          <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-xl font-bold">
+                              Fila de Convocação Ativa
+                            </h3>
+
+                            {carregandoFila && (
+                              <span className="text-xs text-slate-500">
+                                Atualizando fila...
+                              </span>
+                            )}
+                          </div>
+
+                          <FilaConvocacao fila={filaConvocacao} />
+                        </div>
+                      </section>
+
+                      <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
+                        <h2 className="mb-6 text-2xl font-bold">
+                          Ranking Inteligente · Top 5
+                        </h2>
+
+                        <Top5Ranking
+                          ranking={top5Normalizado}
+                          vagaId={vagaOperacionalId}
+                        />
+                      </section>
                     </div>
-
-                    <span className="rounded-full bg-blue-600 px-3 py-1 text-xs">
-                      {ocorrenciaSelecionada?.id ?? vagaOperacionalId}
-                    </span>
                   </div>
-
-                  <div className="mt-6 grid grid-cols-3 gap-4">
-                    <Info titulo="Filial" valor={ocorrenciaSelecionada?.filial ?? ranking?.filial ?? "-"} />
-                    <Info titulo="Cargo" valor={ocorrenciaSelecionada?.cargo ?? ranking?.cargo ?? "-"} />
-                    <Info titulo="Elegíveis" valor={ranking?.total_elegiveis ?? 0} />
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-xl font-bold">
-                      Fila de Convocação Ativa
-                    </h3>
-
-                    {carregandoFila && (
-                      <span className="text-xs text-slate-500">
-                        Atualizando fila...
-                      </span>
-                    )}
-                  </div>
-
-                  <FilaConvocacao fila={filaConvocacao} />
-                </div>
-              </section>
-
-              <section className="rounded-3xl border border-slate-800 bg-[#0f172a] p-6">
-                <h2 className="mb-6 text-2xl font-bold">
-                  Ranking Inteligente · Top 5
-                </h2>
-
-                <Top5Ranking
-                  ranking={top5Normalizado}
-                  vagaId={vagaOperacionalId}
-                />
-
                 </section>
-            </div>
-          </section>
-
               </>
             )}
 

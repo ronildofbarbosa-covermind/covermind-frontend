@@ -38,6 +38,11 @@ type OcorrenciaOperacional = {
   tipoServico: string
   status: StatusOcorrencia
   sla: string
+  horarioPosto?: string
+  enderecoPosto?: string
+  bairroPosto?: string
+  cidadePosto?: string
+  estadoPosto?: string
   motivoOcorrencia?: string
   grupoOcorrencia?: string
   possuiOcupanteVinculado?: boolean
@@ -254,6 +259,11 @@ export function OcorrenciasOperacionaisLista({
             tipoServico={ocorrencia.tipoServico}
             status={ocorrencia.status}
             sla={ocorrencia.sla}
+            horarioPosto={ocorrencia.horarioPosto}
+            enderecoPosto={ocorrencia.enderecoPosto}
+            bairroPosto={ocorrencia.bairroPosto}
+            cidadePosto={ocorrencia.cidadePosto}
+            estadoPosto={ocorrencia.estadoPosto}
             motivoOcorrencia={ocorrencia.motivoOcorrencia}
             grupoOcorrencia={ocorrencia.grupoOcorrencia}
             possuiOcupanteVinculado={ocorrencia.possuiOcupanteVinculado}

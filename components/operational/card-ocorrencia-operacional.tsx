@@ -8,22 +8,9 @@ type StatusOcorrencia =
   | "ALERTA"
   | "NORMAL"
 
-type NivelImpacto =
-  | "BAIXO"
-  | "MEDIO"
-  | "ALTO"
-  | "CRITICO"
-
-type CriticidadePosto =
-  | "BAIXA"
-  | "MEDIA"
-  | "ALTA"
-  | "CRITICA"
-
-type ClassificacaoContrato =
-  | "PADRAO"
-  | "PREMIUM"
-  | "VIP"
+type NivelImpacto = "BAIXO" | "MEDIO" | "ALTO" | "CRITICO"
+type CriticidadePosto = "BAIXA" | "MEDIA" | "ALTA" | "CRITICA"
+type ClassificacaoContrato = "PADRAO" | "PREMIUM" | "VIP"
 
 type Props = {
   id: string
@@ -34,6 +21,11 @@ type Props = {
   tipoServico: string
   status: StatusOcorrencia
   sla: string
+  horarioPosto?: string
+  enderecoPosto?: string
+  bairroPosto?: string
+  cidadePosto?: string
+  estadoPosto?: string
   motivoOcorrencia?: string
   grupoOcorrencia?: string
   possuiOcupanteVinculado?: boolean
@@ -126,6 +118,11 @@ export function CardOcorrenciaOperacional({
   tipoServico,
   status,
   sla,
+  horarioPosto = "Horário não informado",
+  enderecoPosto = "Endereço não informado",
+  bairroPosto,
+  cidadePosto,
+  estadoPosto,
   motivoOcorrencia = "Motivo não informado",
   grupoOcorrencia = "Grupo não informado",
   possuiOcupanteVinculado = false,
@@ -143,12 +140,19 @@ export function CardOcorrenciaOperacional({
   elegiveis = 0,
   filaAtiva = 0,
   recusas = 0,
-  topScore = 0,
   selecionada,
   onSelecionar,
 }: Props) {
   const [mostrarComposicao, setMostrarComposicao] = useState(false)
   const prioridade = classificarPrioridade(scoreExecutivo)
+
+  const enderecoCompleto = [
+    enderecoPosto,
+    bairroPosto,
+    cidadePosto && estadoPosto ? `${cidadePosto}/${estadoPosto}` : cidadePosto || estadoPosto,
+  ]
+    .filter(Boolean)
+    .join(" • ")
 
   return (
     <div
@@ -159,11 +163,9 @@ export function CardOcorrenciaOperacional({
           : "border-slate-800 bg-[#020817] hover:border-slate-600"
       }`}
     >
-      <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <span
-          className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${
-            estilosStatus[status]
-          }`}
+          className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${estilosStatus[status]}`}
         >
           {labelsStatus[status]}
         </span>
@@ -171,179 +173,161 @@ export function CardOcorrenciaOperacional({
         <span className="text-xs text-slate-500">{id}</span>
       </div>
 
-      <div className="mb-3 rounded-xl border border-blue-500/30 bg-blue-950/20 px-3 py-2">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-wide text-blue-300">
-            Score Executivo
-          </span>
-
-          <span className="text-xl font-bold text-blue-200">
-            {scoreExecutivo}
-          </span>
-        </div>
-
-        <div className="mt-2 flex items-center justify-between gap-3">
-          <span
-            className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${prioridade.className}`}
-          >
-            {prioridade.label}
-          </span>
-
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation()
-              setMostrarComposicao((valorAtual) => !valorAtual)
-            }}
-            className="text-xs font-semibold text-blue-300 hover:text-blue-200"
-          >
-            {mostrarComposicao ? "Ocultar prioridade" : "Entender prioridade"}
-          </button>
-        </div>
-
-        {mostrarComposicao && (
-          <div className="mt-3 rounded-xl border border-slate-800 bg-[#020817] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
-              Motivos da prioridade
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(250px,0.8fr)]">
+        <div className="space-y-2">
+          <div className="rounded-xl border border-slate-800 bg-[#06101f] p-3">
+            <p className="text-sm font-bold uppercase tracking-wide text-white">
+              {cliente} · {posto}
             </p>
 
-            <div className="mt-2 space-y-1 text-xs text-slate-300">
-              <p>✓ Status: {labelsStatus[status]}</p>
-              <p>✓ Impacto operacional: {nivelImpacto}</p>
-              <p>✓ Risco contratual: {riscoContratual}</p>
-              <p>✓ Criticidade do posto: {criticidadePosto}</p>
-              <p>✓ Elegíveis disponíveis: {elegiveis}</p>
-              <p>✓ Fila ativa: {filaAtiva}</p>
-              <p>✓ Recusas: {recusas}</p>
+            <p className="mt-2 text-xs font-semibold text-slate-200">
+              🕒 {horarioPosto}
+            </p>
+
+            <p className="mt-1 text-xs text-slate-400">
+              📍 {enderecoCompleto}
+            </p>
+
+            <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-bold uppercase">
+              <span className="rounded-full bg-slate-800 px-2 py-1 text-slate-300">
+                Filial {filial}
+              </span>
+
+              <span className="rounded-full bg-slate-800 px-2 py-1 text-slate-300">
+                {cargo}
+              </span>
+
+              <span className="rounded-full bg-slate-800 px-2 py-1 text-slate-400">
+                {tipoServico}
+              </span>
             </div>
           </div>
-        )}
-      </div>
 
-      <div className="mb-3 rounded-xl border border-violet-500/30 bg-violet-950/20 px-3 py-2">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-wide text-violet-300">
-            ICC do Contrato
-          </span>
+          <div className="grid gap-2 xl:grid-cols-2">
+            <div className="rounded-xl border border-slate-800 bg-[#06101f] p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                Cobertura
+              </p>
 
-          <span className="text-xl font-bold text-violet-200">
-            {iccContrato}
-          </span>
-        </div>
+              <p className="mt-1 text-sm font-bold text-white">
+                {motivoOcorrencia}
+              </p>
 
-        <div className="mt-2">
-          <span
-            className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${estilosContrato[classificacaoContrato]}`}
-          >
-            {labelsContrato[classificacaoContrato]}
-          </span>
-        </div>
-      </div>
+              <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                <span className="text-slate-400">{grupoOcorrencia}</span>
 
-      <div>
-        <p className="font-bold text-white">
-          {cliente} · {posto}
-        </p>
+                <span className="font-semibold text-slate-300">
+                  Posto {criticidadePosto}
+                </span>
+              </div>
+            </div>
 
-        <p className="mt-1 text-xs text-slate-400">
-          {filial} · {cargo}
-        </p>
+            {possuiOcupanteVinculado && (
+              <div className="rounded-xl border border-slate-800 bg-[#06101f] p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                  Colaborador
+                </p>
 
-        <p className="mt-1 text-xs text-slate-500">{tipoServico}</p>
-      </div>
+                <p className="mt-1 text-sm font-bold text-white">
+                  {matriculaColaborador ?? "-"} ·{" "}
+                  {nomeColaborador ?? "Nome não informado"}
+                </p>
 
-      <div className="mt-4 rounded-xl border border-slate-800 bg-[#06101f] p-3">
-        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
-          Motivo da cobertura
-        </p>
+                <p className="mt-1 text-xs text-slate-400">
+                  {cargoColaborador ?? "Cargo não informado"}
+                </p>
+              </div>
+            )}
+          </div>
 
-        <p className="mt-1 text-sm font-bold text-white">
-          {motivoOcorrencia}
-        </p>
+          <div className="rounded-xl border border-slate-800 bg-[#06101f] p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
+              Impacto operacional
+            </p>
 
-        <p className="mt-1 text-xs text-slate-400">
-          {grupoOcorrencia}
-        </p>
+            <p className="mt-1 text-xs text-slate-300">{impactoCliente}</p>
 
-        <p className="mt-2 text-xs text-slate-400">
-          Criticidade do posto:
-          <span className="ml-1 font-semibold text-white">
-            {criticidadePosto}
-          </span>
-        </p>
-      </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <span className="rounded-full bg-slate-800 px-2 py-1 text-[10px] font-bold text-slate-300">
+                SLA {impactoSla}
+              </span>
 
-      {possuiOcupanteVinculado && (
-        <div className="mt-3 rounded-xl border border-slate-800 bg-[#06101f] p-3">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
-            Colaborador vinculado
-          </p>
+              <span className="rounded-full bg-slate-800 px-2 py-1 text-[10px] font-bold text-slate-300">
+                CONTRATO {riscoContratual}
+              </span>
 
-          <p className="mt-1 text-sm font-bold text-white">
-            {matriculaColaborador ?? "-"} · {nomeColaborador ?? "Nome não informado"}
-          </p>
-
-          <p className="mt-1 text-xs text-slate-400">
-            {cargoColaborador ?? "Cargo não informado"}
-          </p>
-        </div>
-      )}
-
-      <div className="mt-3 rounded-xl border border-slate-800 bg-[#06101f] p-3">
-        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
-          Impacto operacional
-        </p>
-
-        <div className="mt-2 space-y-1">
-          <p className="text-xs text-slate-400">
-            Cliente:
-            <span className="ml-1 font-medium text-white">
-              {impactoCliente}
-            </span>
-          </p>
-
-          <p className="text-xs text-slate-400">
-            SLA:
-            <span className="ml-1 font-medium text-white">
-              {impactoSla}
-            </span>
-          </p>
-
-          <p className="text-xs text-slate-400">
-            Contrato:
-            <span className="ml-1 font-medium text-white">
-              {riscoContratual}
-            </span>
-          </p>
-
-          <div className="pt-1">
-            <span
-              className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase ${
-                estilosImpacto[nivelImpacto]
-              }`}
-            >
-              Impacto {nivelImpacto}
-            </span>
+              <span
+                className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase ${estilosImpacto[nivelImpacto]}`}
+              >
+                IMPACTO {nivelImpacto}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-        <Info label="SLA" valor={sla} />
-        <Info label="Elegíveis" valor={elegiveis} />
-        <Info label="Fila" valor={filaAtiva} />
-        <Info label="Recusas" valor={recusas} />
-      </div>
+        <div className="space-y-2">
+          <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-blue-300">
+                Score Executivo
+              </span>
 
-      <div className="mt-3 rounded-xl border border-slate-800 bg-[#06101f] px-3 py-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400">
-            Top Score IA
-          </span>
+              <span className="text-2xl font-bold text-blue-200">
+                {scoreExecutivo}
+              </span>
+            </div>
 
-          <span className="text-lg font-bold text-emerald-400">
-            {topScore}
-          </span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <span
+                className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${prioridade.className}`}
+              >
+                {prioridade.label}
+              </span>
+
+              <span
+                className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${estilosContrato[classificacaoContrato]}`}
+              >
+                ICC {iccContrato} · {labelsContrato[classificacaoContrato]}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                setMostrarComposicao((valorAtual) => !valorAtual)
+              }}
+              className="mt-2 text-xs font-semibold text-blue-300 hover:text-blue-200"
+            >
+              {mostrarComposicao ? "Ocultar prioridade" : "Entender prioridade"}
+            </button>
+
+            {mostrarComposicao && (
+              <div className="mt-3 rounded-xl border border-slate-800 bg-[#020817] p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                  Motivos da prioridade
+                </p>
+
+                <div className="mt-2 space-y-1 text-xs text-slate-300">
+                  <p>✓ Status: {labelsStatus[status]}</p>
+                  <p>✓ Impacto operacional: {nivelImpacto}</p>
+                  <p>✓ Risco contratual: {riscoContratual}</p>
+                  <p>✓ Criticidade do posto: {criticidadePosto}</p>
+                  <p>✓ Elegíveis disponíveis: {elegiveis}</p>
+                  <p>✓ Fila ativa: {filaAtiva}</p>
+                  <p>✓ Recusas: {recusas}</p>
+                  <p>✓ ICC do contrato: {iccContrato}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <Info label="SLA" valor={sla} />
+            <Info label="Elegíveis" valor={elegiveis} />
+            <Info label="Fila" valor={filaAtiva} />
+            <Info label="Recusas" valor={recusas} />
+          </div>
         </div>
       </div>
     </div>
