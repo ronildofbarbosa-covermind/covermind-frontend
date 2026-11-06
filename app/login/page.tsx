@@ -42,14 +42,12 @@ export default function LoginPage() {
                 alt="ZEVYL — logomarca oficial"
                 width={330}
                 height={226}
-                className="h-auto w-36 object-contain sm:w-44"
+                className="h-auto w-44 object-contain sm:w-52"
               />
             </div>
 
             <div className="mt-10 max-w-md">
-              <p className="mb-5 text-xs font-semibold uppercase tracking-[.28em] text-cyan-300">
-                Cognitive Momentum
-              </p>
+
               <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
                 Inteligências especializadas. Decisões conectadas. Evolução contínua.
               </h1>
